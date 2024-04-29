@@ -32,6 +32,9 @@ bld/
 [Oo]ut/
 [Ll]og/
 [Ll]ogs/
+build/
+.kdev4/
+GPO_Final.kdev4
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
