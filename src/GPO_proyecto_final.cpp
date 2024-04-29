@@ -18,6 +18,13 @@ const char* prac = "OpenGL (GpO)";   // Nombre de la practica (aparecera en el t
 GLFWwindow* window;
 GLuint prog;
 
+// Dibuja objeto indexado
+void dibujar_indexado(objeto obj) {
+	glBindVertexArray(obj.VAO);              // Activamos VAO asociado al objeto
+	glDrawElements(GL_TRIANGLES,obj.Ni,obj.tipo_indice,(void*)0);  // Dibujar (indexado)
+	glBindVertexArray(0);
+}
+
 mat4 PV;
 vec3 pos_obs = vec3(0.0f,0.0f,5.0f);
 vec3 target = vec3(0.0f,0.0f,0.0f);
@@ -34,9 +41,11 @@ void init_scene()
     glViewport(0, 0, width, height);
 
 	// Mandar programas a GPU, compilar y crear programa en GPU
-	prog = Compile_Link_Shaders(
-		leer_codigo_de_fichero("data/prog.vs"),
-		leer_codigo_de_fichero("data/prog.fs"));
+	char* vertex = leer_codigo_de_fichero("data/prog.vs");
+	char* fragment = leer_codigo_de_fichero("data/prog.fs");
+	prog = Compile_Link_Shaders(vertex, fragment);
+	delete []vertex;
+	delete []fragment;
 
 	glUseProgram(prog);    // Indicamos que programa vamos a usar 
 	
@@ -58,7 +67,8 @@ void render_scene()
 
 	///////// Actualizacion matriz MVP  /////////	
 	mat4 M = glm::translate(glm::vec3(0.0, 0.0, 3.0f*sin(t))); 
-	transfer_mat4("MVP",PV * M);
+	transfer_mat4("PV", PV);
+	transfer_mat4("M", M);
 	
 	// ORDEN de dibujar
 
