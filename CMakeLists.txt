@@ -43,6 +43,7 @@ set(GPO_SOURCE_FILES include/stb/stb_image.h
 					 libs/imgui/backends/imgui_impl_glfw.cpp
 					 libs/imgui/backends/imgui_impl_opengl3.cpp
 					 src/GPO_proyecto_final.cpp
+					 src/GPO_imgui_aux.cpp
 					 src/GPO_aux.cpp)
 add_executable(gpo_proyecto_final ${GPO_SOURCE_FILES})
 target_link_libraries(gpo_proyecto_final PRIVATE ${OPENGL_LIBRARIES} glfw glm glad_interface)

@@ -3,9 +3,7 @@ ATG, 2019
 ******************************************************************************/
 
 #include <GpO.h>
-#include <imgui.h>
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_opengl3.h>
+#include "GPO_imgui_aux.h"
 
 // TAMA�O y TITULO INICIAL de la VENTANA
 int ANCHO = 800, ALTO = 600;  // Tama�o inicial ventana
@@ -16,7 +14,7 @@ const char* prac = "OpenGL (GpO)";   // Nombre de la practica (aparecera en el t
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GLFWwindow* window;
-GLuint prog;
+GLuint prog[2];
 objeto obj;
 
 // Dibuja objeto indexado
@@ -43,12 +41,18 @@ void init_scene()
 
 	// Mandar programas a GPU, compilar y crear programa en GPU
 	char* vertex = leer_codigo_de_fichero("data/prog.vs");
-	char* fragment = leer_codigo_de_fichero("data/prog.fs");
-	prog = Compile_Link_Shaders(vertex, fragment);
+	char* fragment = leer_codigo_de_fichero("data/prog_phong.fs");
+	prog[0] = Compile_Link_Shaders(vertex, fragment);
 	delete []vertex;
 	delete []fragment;
 
-	glUseProgram(prog);
+	vertex = leer_codigo_de_fichero("data/prog.vs");
+	fragment = leer_codigo_de_fichero("data/prog_blinn.fs");
+	prog[1] = Compile_Link_Shaders(vertex, fragment);
+	delete []vertex;
+	delete []fragment;
+
+	glUseProgram(prog[0]);
 
 	mat4 P = perspective(glm::radians(fov), aspect, 0.5f, 20.0f);
 	mat4 V = lookAt(pos_obs, target, up);
@@ -84,6 +88,18 @@ void render_scene()
 	dibujar_indexado(obj);
 }
 
+//////////  FUNCION PARA PROCESAR VALORES DE IMGUI  //////////
+void render_imgui(void) {
+	static int nProg = 0;
+
+	ImGui::Begin("Controls");
+
+	if (imgui_renderShaderSelect(&nProg))
+		glUseProgram(prog[nProg]);
+
+	ImGui::End();
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// PROGRAMA PRINCIPAL
@@ -93,19 +109,7 @@ int main(int argc, char* argv[])
 	init_GLFW();            // Inicializa lib GLFW
 	window = Init_Window(prac);  // Crea ventana usando GLFW, asociada a un contexto OpenGL	X.Y
 
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-
-	// Setup Platform/Renderer backends
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 330 core");
+	init_imgui(window);
 
 	load_Opengl();         // Carga funciones de OpenGL, comprueba versi�n.
 	init_scene();          // Prepara escena
@@ -114,27 +118,22 @@ int main(int argc, char* argv[])
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
-
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+		imgui_newframe();
 
 		render_scene();
-		//ImGui::ShowDemoWindow();
 
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		//Controles de IMGUI
+		render_imgui();
+
+		imgui_renderframe();
 		glfwSwapBuffers(window);
 		show_info();
 	}
 
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
+	terminate_imgui();
 	glfwTerminate();
 	exit(EXIT_SUCCESS);
 }
-
 
 //////////  FUNCION PARA MOSTRAR INFO OPCIONAL EN EL TITULO DE VENTANA  //////////
 void show_info()
