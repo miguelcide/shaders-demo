@@ -17,6 +17,7 @@ const char* prac = "OpenGL (GpO)";   // Nombre de la practica (aparecera en el t
 
 GLFWwindow* window;
 GLuint prog;
+objeto obj;
 
 // Dibuja objeto indexado
 void dibujar_indexado(objeto obj) {
@@ -37,8 +38,8 @@ float fov = 35.0f, aspect = 4.0f / 3.0f;
 void init_scene()
 {
 	int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    glViewport(0, 0, width, height);
+	glfwGetFramebufferSize(window, &width, &height);
+	glViewport(0, 0, width, height);
 
 	// Mandar programas a GPU, compilar y crear programa en GPU
 	char* vertex = leer_codigo_de_fichero("data/prog.vs");
@@ -47,15 +48,20 @@ void init_scene()
 	delete []vertex;
 	delete []fragment;
 
-	glUseProgram(prog);    // Indicamos que programa vamos a usar 
-	
+	glUseProgram(prog);
+
 	mat4 P = perspective(glm::radians(fov), aspect, 0.5f, 20.0f);
 	mat4 V = lookAt(pos_obs, target, up);
 	PV = P * V;
-	
+
+	obj = cargar_modelo("data/buda_n.bix");
+
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 }
+
+vec3 luz = vec3(1, 1, 0) / sqrt(2.0f);
+vec4 coeficientes = vec4(0.1, 0.6, 0.3, 16);
 
 // Actualizar escena: cambiar posici�n objetos, nuevos objetros, posici�n c�mara, luces, etc.
 void render_scene()
@@ -66,12 +72,16 @@ void render_scene()
 	float t = (float)glfwGetTime();  // Contador de tiempo en segundos 
 
 	///////// Actualizacion matriz MVP  /////////	
-	mat4 M = glm::translate(glm::vec3(0.0, 0.0, 3.0f*sin(t))); 
+	mat4 M = translate(vec3(0.0f, -1.0f, 0.0f)) * rotate(1.5f * t, vec3(0.0f, 1.0f, 0.0f));
+
 	transfer_mat4("PV", PV);
 	transfer_mat4("M", M);
-	
-	// ORDEN de dibujar
+	transfer_vec3("camera", pos_obs);
+	transfer_vec3("luz", luz);
+	transfer_vec4("coeficientes", coeficientes);
 
+	// ORDEN de dibujar
+	dibujar_indexado(obj);
 }
 
 
@@ -110,7 +120,7 @@ int main(int argc, char* argv[])
 		ImGui::NewFrame();
 
 		render_scene();
-		ImGui::ShowDemoWindow();
+		//ImGui::ShowDemoWindow();
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

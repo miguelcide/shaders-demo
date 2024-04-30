@@ -1,6 +1,6 @@
 #version 330 core
 in vec3 norm;
-in vec2 UV;
+//in vec2 UV;
 in vec3 vision;
 out vec3 col;
 
@@ -24,5 +24,5 @@ void main() {
 
 	col = vec3(1, 1, 1)
 		* ilu
-		* texture(unit, UV).rgb;
+		/* texture(unit, UV).rgb*/;
 }
