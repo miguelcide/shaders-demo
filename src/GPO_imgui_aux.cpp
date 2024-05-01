@@ -45,6 +45,17 @@ bool imgui_renderShaderSelect(int* nProg) {
 	return false;
 }
 
+bool imgui_renderCameraPos(float* d, float* az, float* el) {
+	bool res = false;
+
+	ImGui::Text("Camera position");
+	res |= ImGui::SliderFloat("Distance", d, 2.0f, 16.0f);
+	res |= ImGui::SliderAngle("Azimuth", az, 0.0f, 360.0f);
+	res |= ImGui::SliderAngle("Elevation", el, -89.0f, 89.0f);
+
+	return res;
+}
+
 void imgui_renderframe(void) {
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

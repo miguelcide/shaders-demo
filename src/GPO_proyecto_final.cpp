@@ -24,12 +24,6 @@ void dibujar_indexado(objeto obj) {
 	glBindVertexArray(0);
 }
 
-mat4 PV;
-vec3 pos_obs = vec3(0.0f,0.0f,5.0f);
-vec3 target = vec3(0.0f,0.0f,0.0f);
-vec3 up = vec3(0,1,0);
-float fov = 35.0f, aspect = 4.0f / 3.0f;
-
 // Preparaci�n de los datos de los objetos a dibujar, envialarlos a la GPU
 // Compilaci�n programas a ejecutar en la tarjeta gr�fica:  vertex shader, fragment shaders
 // Opciones generales de render de OpenGL
@@ -54,15 +48,16 @@ void init_scene()
 
 	glUseProgram(prog[0]);
 
-	mat4 P = perspective(glm::radians(fov), aspect, 0.5f, 20.0f);
-	mat4 V = lookAt(pos_obs, target, up);
-	PV = P * V;
-
 	obj = cargar_modelo("data/buda_n.bix");
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 }
+
+vec3 pos_obs = vec3(8.0f,0.0f,0.0f);
+vec3 target = vec3(0.0f,0.0f,0.0f);
+vec3 up = vec3(0,1,0);
+float fov = 35.0f, aspect = 4.0f / 3.0f;
 
 vec3 luz = vec3(1, 1, 0) / sqrt(2.0f);
 vec4 coeficientes = vec4(0.1, 0.6, 0.3, 16);
@@ -75,8 +70,11 @@ void render_scene()
 
 	float t = (float)glfwGetTime();  // Contador de tiempo en segundos 
 
-	///////// Actualizacion matriz MVP  /////////	
-	mat4 M = translate(vec3(0.0f, -1.0f, 0.0f)) * rotate(1.5f * t, vec3(0.0f, 1.0f, 0.0f));
+	///////// Actualizacion matriz MVP  /////////
+	mat4 P = perspective(glm::radians(fov), aspect, 0.5f, 32.0f);
+	mat4 V = lookAt(pos_obs, target, up);
+	mat4 PV = P * V;
+	mat4 M = translate(vec3(0.0f, -1.0f, 0.0f));
 
 	transfer_mat4("PV", PV);
 	transfer_mat4("M", M);
@@ -91,11 +89,16 @@ void render_scene()
 //////////  FUNCION PARA PROCESAR VALORES DE IMGUI  //////////
 void render_imgui(void) {
 	static int nProg = 0;
+	static float d = 8.0f;
+	static float az = 0.0f;
+	static float el = 0.0f;
 
 	ImGui::Begin("Controls");
 
 	if (imgui_renderShaderSelect(&nProg))
 		glUseProgram(prog[nProg]);
+	if (imgui_renderCameraPos(&d, &az, &el))
+		pos_obs = d * vec3(cos(az) * cos(el), sin(el), sin(az) * cos(el));
 
 	ImGui::End();
 }
@@ -168,9 +171,6 @@ void ResizeCallback(GLFWwindow* window, int width, int height)
 	ALTO = height;	ANCHO = width;
 
 	aspect = (float)ANCHO / ALTO;
-	mat4 P = perspective(glm::radians(fov), aspect, 0.5f, 20.0f);
-	mat4 V = lookAt(pos_obs, target, up);
-	PV = P * V;
 }
 
 // Callback de pulsacion de tecla

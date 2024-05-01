@@ -9,3 +9,4 @@ void imgui_newframe(void);
 void imgui_renderframe(void);
 
 bool imgui_renderShaderSelect(int* nProg);
+bool imgui_renderCameraPos(float* d, float* az, float* el);
