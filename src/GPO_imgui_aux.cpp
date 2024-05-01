@@ -49,9 +49,19 @@ bool imgui_renderCameraPos(float* d, float* az, float* el) {
 	bool res = false;
 
 	ImGui::Text("Camera position");
-	res |= ImGui::SliderFloat("Distance", d, 2.0f, 16.0f);
-	res |= ImGui::SliderAngle("Azimuth", az, 0.0f, 360.0f);
-	res |= ImGui::SliderAngle("Elevation", el, -89.0f, 89.0f);
+	res |= ImGui::SliderFloat("Distance##camara", d, 2.0f, 16.0f, "%.3f", ImGuiSliderFlags_NoRoundToFormat);
+	res |= ImGui::SliderAngle("Azimuth##camara", az, 0.0f, 360.0f, "%.1f deg", ImGuiSliderFlags_NoRoundToFormat);
+	res |= ImGui::SliderAngle("Elevation##camara", el, -89.999f, 89.999f, "%.1f deg", ImGuiSliderFlags_NoRoundToFormat);
+
+	return res;
+}
+
+bool imgui_renderLightVec(float* az, float* el) {
+	bool res = false;
+
+	ImGui::Text("Global light vector");
+	res |= ImGui::SliderAngle("Azimuth##luzglobal", az, 0.0f, 360.0f, "%.1f deg", ImGuiSliderFlags_NoRoundToFormat);
+	res |= ImGui::SliderAngle("Elevation##luzglobal", el, -89.999f, 89.999f, "%.1f deg", ImGuiSliderFlags_NoRoundToFormat);
 
 	return res;
 }

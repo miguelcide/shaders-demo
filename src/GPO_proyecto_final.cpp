@@ -59,7 +59,7 @@ vec3 target = vec3(0.0f,0.0f,0.0f);
 vec3 up = vec3(0,1,0);
 float fov = 35.0f, aspect = 4.0f / 3.0f;
 
-vec3 luz = vec3(1, 1, 0) / sqrt(2.0f);
+vec3 luz = vec3(1, 0, 0);
 vec4 coeficientes = vec4(0.1, 0.6, 0.3, 16);
 
 // Actualizar escena: cambiar posici�n objetos, nuevos objetros, posici�n c�mara, luces, etc.
@@ -89,16 +89,24 @@ void render_scene()
 //////////  FUNCION PARA PROCESAR VALORES DE IMGUI  //////////
 void render_imgui(void) {
 	static int nProg = 0;
-	static float d = 8.0f;
-	static float az = 0.0f;
-	static float el = 0.0f;
+	static struct {
+		float d = 8.0f;
+		float az = 0.0f;
+		float el = 0.0f;
+	} camara;
+	static struct {
+		float az = 0.0f;
+		float el = 0.0f;
+	} luzGlobal;
 
 	ImGui::Begin("Controls");
 
 	if (imgui_renderShaderSelect(&nProg))
 		glUseProgram(prog[nProg]);
-	if (imgui_renderCameraPos(&d, &az, &el))
-		pos_obs = d * vec3(cos(az) * cos(el), sin(el), sin(az) * cos(el));
+	if (imgui_renderCameraPos(&camara.d, &camara.az, &camara.el))
+		pos_obs = camara.d * vec3(cos(camara.az) * cos(camara.el), sin(camara.el), sin(camara.az) * cos(camara.el));
+	if (imgui_renderLightVec(&luzGlobal.az, &luzGlobal.el))
+		luz = vec3(cos(luzGlobal.az) * cos(luzGlobal.el), sin(luzGlobal.el), sin(luzGlobal.az) * cos(luzGlobal.el));
 
 	ImGui::End();
 }
