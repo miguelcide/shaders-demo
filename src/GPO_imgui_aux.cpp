@@ -66,6 +66,12 @@ bool imgui_renderLightVec(float* az, float* el) {
 	return res;
 }
 
+void imgui_renderLightColor(vec3* color) {
+	ImGui::Text("Lighting color");
+	ImGui::ColorPicker3("##color", &color->r, //Esto es una autentica guarrada que puede explotar en cualquier momento
+		ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_DisplayRGB);
+}
+
 void imgui_renderCoefficients(vec4* coeficientes) {
 	ImGui::Text("Lighting coefficients");
 	ImGui::SliderFloat("Ambient##coeficientes", &(coeficientes->x), 0.0f, 1.0f, "%.2f");

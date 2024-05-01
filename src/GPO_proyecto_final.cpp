@@ -60,6 +60,7 @@ vec3 up = vec3(0,1,0);
 float fov = 35.0f, aspect = 4.0f / 3.0f;
 
 vec3 luz = vec3(1, 0, 0);
+vec3 colorLuz = vec3(1, 1, 1);
 vec4 coeficientes = vec4(0.1, 0.6, 0.3, 16);
 
 // Actualizar escena: cambiar posici�n objetos, nuevos objetros, posici�n c�mara, luces, etc.
@@ -80,6 +81,7 @@ void render_scene()
 	transfer_mat4("M", M);
 	transfer_vec3("camera", pos_obs);
 	transfer_vec3("luz", luz);
+	transfer_vec3("colorLuz", colorLuz);
 	transfer_vec4("coeficientes", coeficientes);
 
 	// ORDEN de dibujar
@@ -107,6 +109,7 @@ void render_imgui(void) {
 		pos_obs = camara.d * vec3(cos(camara.az) * cos(camara.el), sin(camara.el), sin(camara.az) * cos(camara.el));
 	if (imgui_renderLightVec(&luzGlobal.az, &luzGlobal.el))
 		luz = vec3(cos(luzGlobal.az) * cos(luzGlobal.el), sin(luzGlobal.el), sin(luzGlobal.az) * cos(luzGlobal.el));
+	imgui_renderLightColor(&colorLuz);
 	imgui_renderCoefficients(&coeficientes);
 
 	ImGui::End();
