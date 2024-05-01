@@ -11,3 +11,4 @@ void imgui_renderframe(void);
 bool imgui_renderShaderSelect(int* nProg);
 bool imgui_renderCameraPos(float* d, float* az, float* el);
 bool imgui_renderLightVec(float* az, float* el);
+void imgui_renderCoefficients(vec4* coeficientes);

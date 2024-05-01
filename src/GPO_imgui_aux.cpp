@@ -66,6 +66,14 @@ bool imgui_renderLightVec(float* az, float* el) {
 	return res;
 }
 
+void imgui_renderCoefficients(vec4* coeficientes) {
+	ImGui::Text("Lighting coefficients");
+	ImGui::SliderFloat("Ambient##coeficientes", &(coeficientes->x), 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("Diffuse##coeficientes", &(coeficientes->y), 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("Specular##coeficientes", &(coeficientes->z), 0.0f, 1.0f, "%.2f");
+	ImGui::SliderFloat("Shininess##coeficientes", &(coeficientes->w), 1.0f, 100.0f, "%.0f");
+}
+
 void imgui_renderframe(void) {
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
