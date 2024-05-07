@@ -1,0 +1,10 @@
+Tower of the Gods extracted from Wind Waker. Includes dae and obj models. A set of models are at the size the bmd/bdl plug-in for Blender imported them at and they are huge. Also a small set that are at the size that BmdView2 saves models at.
+
+Tools:
+Dolphin to extract the .arc files
+yaz0dec.exe and/or rarcdump.exe
+BmdView2
+Blender 2.78 with bdl/bmd import plug in
+
+AJD-262
+Feb 26 2021

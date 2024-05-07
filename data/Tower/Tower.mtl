@@ -1,0 +1,98 @@
+# Blender MTL File: 'None'
+# Material Count: 8
+
+newmtl lambert10315_v.001
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.250000 0.250000 0.250000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd data/Tower/X_TTowerWall07.png
+map_d data/Tower/X_TTowerWall07.png
+
+newmtl test_file150Material_v.001
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.250000 0.250000 0.250000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd data/Tower/X_TTowerWall12.png
+map_d data/Tower/X_TTowerWall12.png
+
+newmtl test_lambert10332_v.001
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.250000 0.250000 0.250000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd data/Tower/X_TTowerWall08.png
+map_d data/Tower/X_TTowerWall08.png
+
+newmtl test_lambert10333_v.001
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.250000 0.250000 0.250000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd data/Tower/X_TTowerWall11.png
+map_d data/Tower/X_TTowerWall11.png
+
+newmtl test_lambert10334_v.001
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.250000 0.250000 0.250000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd data/Tower/X_TTowerWall05.png
+map_d data/Tower/X_TTowerWall05.png
+
+newmtl test_lambert10335_v.001
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.250000 0.250000 0.250000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd data/Tower/X_TTowerWall09.png
+map_d data/Tower/X_TTowerWall09.png
+
+newmtl test_lambert10336_v.001
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.250000 0.250000 0.250000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd data/Tower/X_TTowerWall10.png
+map_d data/Tower/X_TTowerWall10.png
+
+newmtl test_lambert10337_v.001
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.250000 0.250000 0.250000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd data/Tower/X_TTowerWall13.png
+map_d data/Tower/X_TTowerWall13.png
