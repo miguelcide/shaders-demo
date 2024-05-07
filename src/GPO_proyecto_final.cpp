@@ -4,6 +4,7 @@ ATG, 2019
 
 #include <GpO.h>
 #include "GPO_imgui_aux.h"
+#include "GPO_assimp_aux.h"
 
 // TAMA�O y TITULO INICIAL de la VENTANA
 int ANCHO = 800, ALTO = 600;  // Tama�o inicial ventana
@@ -16,12 +17,20 @@ const char* prac = "OpenGL (GpO)";   // Nombre de la practica (aparecera en el t
 GLFWwindow* window;
 GLuint prog[2];
 objeto obj;
+struct escena isla;
 
 // Dibuja objeto indexado
 void dibujar_indexado(objeto obj) {
 	glBindVertexArray(obj.VAO);              // Activamos VAO asociado al objeto
 	glDrawElements(GL_TRIANGLES,obj.Ni,obj.tipo_indice,(void*)0);  // Dibujar (indexado)
 	glBindVertexArray(0);
+}
+
+void dibujar_escena(struct escena escena) {
+	for (unsigned int i = 0; i < escena.nInstancias; i++) {
+		const unsigned int j = escena.instIdx[i];
+		dibujar_indexado(escena.objs[j]);
+	}
 }
 
 // Preparaci�n de los datos de los objetos a dibujar, envialarlos a la GPU
@@ -49,6 +58,7 @@ void init_scene()
 	glUseProgram(prog[0]);
 
 	obj = cargar_modelo("data/buda_n.bix");
+	isla = cargar_modelo_assimp("data/Island/Island.obj");
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -85,7 +95,9 @@ void render_scene()
 	transfer_vec4("coeficientes", coeficientes);
 
 	// ORDEN de dibujar
-	dibujar_indexado(obj);
+	//dibujar_indexado(obj);
+	transfer_mat4("M", mat4(1.0f)); //Las escenas ya tienen sus matrices de transformación aplicadas
+	dibujar_escena(isla);
 }
 
 //////////  FUNCION PARA PROCESAR VALORES DE IMGUI  //////////
@@ -145,6 +157,7 @@ int main(int argc, char* argv[])
 		show_info();
 	}
 
+	limpiar_escena(&isla);
 	terminate_imgui();
 	glfwTerminate();
 	exit(EXIT_SUCCESS);

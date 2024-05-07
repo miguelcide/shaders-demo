@@ -1,0 +1,125 @@
+#include "GPO_assimp_aux.h"
+
+GLuint build_VBO(void* data, GLsizeiptr size, GLenum type) {
+	GLuint buffer;
+	//Creamos un nuevo VBO en la GPU y copiamos los datos
+	glGenBuffers(1, &buffer);
+	glBindBuffer(type, buffer);
+	glBufferData(type, size, data, GL_STATIC_DRAW);
+	return buffer;
+}
+
+GLuint build_VAO(aiMesh* mesh) {
+	//TODO: Colores de los vertices, UVs (quizás materiales)
+	float* vertices = new float[mesh->mNumVertices*3];
+	float* normales = new float[mesh->mNumVertices*3];
+	unsigned int* indices = new unsigned int[mesh->mNumFaces*3];
+
+	//Copia de las coordenadas y normales de cada vértice
+	for (int i = 0; i < mesh->mNumVertices; i++) {
+		const int idx = i*3;
+		vertices[idx] = mesh->mVertices[i].x;
+		vertices[idx+1] = mesh->mVertices[i].y;
+		vertices[idx+2] = mesh->mVertices[i].z;
+	}
+	for (int i = 0; i < mesh->mNumVertices; i++) {
+		const int idx = i*3;
+		normales[idx] = mesh->mNormals[i].x;
+		normales[idx+1] = mesh->mNormals[i].y;
+		normales[idx+2] = mesh->mNormals[i].z;
+	}
+	//Copia de los índices, para dibujado con índices
+	for (int i = 0; i < mesh->mNumFaces; i++) {
+		const int idx = i*3;
+		indices[idx] = mesh->mFaces[i].mIndices[0];
+		indices[idx+1] = mesh->mFaces[i].mIndices[1];
+		indices[idx+2] = mesh->mFaces[i].mIndices[2];
+	}
+
+	//Creamos un VAO
+	GLuint buffer;
+	glGenVertexArrays(1, &buffer);
+	glBindVertexArray(buffer);
+
+	//Creamos VBO con coordenadas de cada vértice y lo asignamos a layout 0
+	build_VBO(vertices, mesh->mNumVertices*sizeof(float)*3, GL_ARRAY_BUFFER);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), 0);
+
+	//Creamos un VBO con normales de cada vértice y lo asignamos a layout 1
+	build_VBO(normales, mesh->mNumVertices*sizeof(float)*3, GL_ARRAY_BUFFER);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), 0);
+
+	//Creamos un VBO con los índices
+	build_VBO(indices, mesh->mNumFaces*sizeof(unsigned int)*3, GL_ELEMENT_ARRAY_BUFFER);
+
+	//Limpieza y un-bind de todos los buffers
+	delete []vertices;
+	delete []normales;
+	delete []indices;
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	return buffer;
+}
+
+objeto build_objeto(aiMesh* mesh) {
+	objeto obj;
+	obj.VAO = build_VAO(mesh);
+	//TODO: Debería de haber una forma de saber el tamaño en bytes de los índices, para evitar malgastar memoria
+	obj.tipo_indice = GL_UNSIGNED_INT;
+	obj.Ni = mesh->mNumFaces*3;
+	obj.Nv = mesh->mNumVertices*3;
+	return obj;
+}
+
+struct escena cargar_modelo_assimp(const char* file) {
+	struct escena escena;
+	Assimp::Importer importer;
+
+	//Normalizar el tamaño completo de la escena y eliminar primitivas que no se puedan convertir a triángulos
+	importer.SetPropertyBool(AI_CONFIG_PP_PTV_NORMALIZE, true);
+	importer.SetPropertyInteger(AI_CONFIG_PP_SBP_REMOVE, aiPrimitiveType_POINT | aiPrimitiveType_LINE);
+
+	//Parsear la escena, dejando que la librería aplique todas las matrices de transformación entre otras cosas
+	//El resultado es una estructura en forma de árbol, pero con las transformaciones solo tendrá profundidad de 1
+	//TODO: Es posible que el nodo raíz contenga toda la escena si es sencilla, cosa que no está soportada aún
+	const aiScene* scene = importer.ReadFile(file, aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_PreTransformVertices);
+	if (nullptr == scene) {
+		fprintf(stderr, "%s\n", importer.GetErrorString());
+		exit(1);
+	}
+
+	//Una escena tiene tantos objetos como mayas, y cada maya puede instanciarse una o más veces
+	printf("Assimp: Loaded model %s\n\tAnimations: %u\n\tCameras: %u\n\tLights: %u\n\tMaterials: %u\n\tMeshes: %u\n\tSkeletons: %u\n\tTextures: %u\n",
+		scene->mName.C_Str(), scene->mNumAnimations, scene->mNumCameras,
+		scene->mNumLights, scene->mNumMaterials, scene->mNumMeshes,
+		scene->mNumSkeletons, scene->mNumTextures);
+
+	//Por cada maya, creamos un objeto
+	escena.nObjetos = scene->mNumMeshes;
+	escena.objs = new objeto[escena.nObjetos];
+	for (unsigned int i = 0; i < escena.nObjetos; i++)
+		escena.objs[i] = build_objeto(scene->mMeshes[i]);
+
+	//Contamos el número de instancias totales del sistema
+	unsigned int nChildren = scene->mRootNode->mNumChildren;
+	escena.nInstancias = 0;
+	for (unsigned int i = 0; i < nChildren; i++)
+		escena.nInstancias += scene->mRootNode->mChildren[i]->mNumMeshes;
+
+	//Cada instancia es una referencia a una de las mayas
+	escena.instIdx = new unsigned int[escena.nInstancias];
+	for (unsigned int i = 0, j = 0; i < nChildren; i++) {
+		aiNode* node = scene->mRootNode->mChildren[i];
+		for (unsigned int k = 0; k < node->mNumMeshes; k++)
+			escena.instIdx[j++] = node->mMeshes[k];
+	}
+
+	return escena;
+}
+
+void limpiar_escena(struct escena* escena) {
+	delete []escena->objs;
+	delete []escena->instIdx;
+}
