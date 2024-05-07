@@ -13,9 +13,10 @@ GLuint build_VAO(aiMesh* mesh) {
 	//TODO: Colores de los vertices, UVs (quizás materiales)
 	float* vertices = new float[mesh->mNumVertices*3];
 	float* normales = new float[mesh->mNumVertices*3];
+	float* uvs = new float[mesh->mNumVertices*2];
 	unsigned int* indices = new unsigned int[mesh->mNumFaces*3];
 
-	//Copia de las coordenadas y normales de cada vértice
+	//Copia de las coordenadas, normales y UVs de cada vértice
 	for (int i = 0; i < mesh->mNumVertices; i++) {
 		const int idx = i*3;
 		vertices[idx] = mesh->mVertices[i].x;
@@ -27,6 +28,11 @@ GLuint build_VAO(aiMesh* mesh) {
 		normales[idx] = mesh->mNormals[i].x;
 		normales[idx+1] = mesh->mNormals[i].y;
 		normales[idx+2] = mesh->mNormals[i].z;
+	}
+	for (int i = 0; i < mesh->mNumVertices; i++) {
+		const int idx = i*2;
+		uvs[idx] = mesh->mTextureCoords[0][i].x;
+		uvs[idx+1] = mesh->mTextureCoords[0][i].y;
 	}
 	//Copia de los índices, para dibujado con índices
 	for (int i = 0; i < mesh->mNumFaces; i++) {
@@ -51,12 +57,18 @@ GLuint build_VAO(aiMesh* mesh) {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), 0);
 
+	//Creamos un VBO con UVs de cada vértice y lo asignamos a layout 2
+	build_VBO(uvs, mesh->mNumVertices*sizeof(float)*2, GL_ARRAY_BUFFER);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0);
+
 	//Creamos un VBO con los índices
 	build_VBO(indices, mesh->mNumFaces*sizeof(unsigned int)*3, GL_ELEMENT_ARRAY_BUFFER);
 
 	//Limpieza y un-bind de todos los buffers
 	delete []vertices;
 	delete []normales;
+	delete []uvs;
 	delete []indices;
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -71,6 +83,16 @@ objeto build_objeto(aiMesh* mesh) {
 	obj.Ni = mesh->mNumFaces*3;
 	obj.Nv = mesh->mNumVertices*3;
 	return obj;
+}
+
+GLuint build_material(aiMaterial* mat) {
+	aiString str;
+	/*for (unsigned int j = 0; j < mat->mNumProperties; j++) {
+	 *	str = mat->mProperties[j]->mKey;
+	 *	printf("\t\tProp%u: %s\n", j, str.C_Str());
+	}*/
+	mat->Get(_AI_MATKEY_TEXTURE_BASE, aiTextureType_DIFFUSE, 0, str);
+	return cargar_textura(str.C_Str(), GL_TEXTURE0);
 }
 
 struct escena cargar_modelo_assimp(const char* file) {
@@ -96,11 +118,18 @@ struct escena cargar_modelo_assimp(const char* file) {
 		scene->mNumLights, scene->mNumMaterials, scene->mNumMeshes,
 		scene->mNumSkeletons, scene->mNumTextures);
 
-	//Por cada maya, creamos un objeto
+	//Por cada maya, creamos un objeto y su material
 	escena.nObjetos = scene->mNumMeshes;
 	escena.objs = new objeto[escena.nObjetos];
-	for (unsigned int i = 0; i < escena.nObjetos; i++)
-		escena.objs[i] = build_objeto(scene->mMeshes[i]);
+	//TODO: Suponemos una única textura
+	escena.mats = new GLuint[escena.nObjetos];
+	for (unsigned int i = 0; i < escena.nObjetos; i++) {
+		aiMesh* mesh = scene->mMeshes[i];
+		escena.objs[i] = build_objeto(mesh);
+
+		aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+		escena.mats[i] = build_material(mat);
+	}
 
 	//Contamos el número de instancias totales del sistema
 	unsigned int nChildren = scene->mRootNode->mNumChildren;
@@ -121,5 +150,6 @@ struct escena cargar_modelo_assimp(const char* file) {
 
 void limpiar_escena(struct escena* escena) {
 	delete []escena->objs;
+	delete []escena->mats;
 	delete []escena->instIdx;
 }

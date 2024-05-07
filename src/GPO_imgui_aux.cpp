@@ -45,6 +45,20 @@ bool imgui_renderShaderSelect(int* nProg) {
 	return false;
 }
 
+bool imgui_renderSceneSelect(int* nScene) {
+	static int sel = 0;
+
+	ImGui::Text("Select scene");
+	ImGui::RadioButton("Isla", &sel, 0); ImGui::SameLine();
+	ImGui::RadioButton("Torre", &sel, 1);
+
+	if (sel != *nScene) {
+		*nScene = sel;
+		return true;
+	}
+	return false;
+}
+
 bool imgui_renderCameraPos(float* d, float* az, float* el) {
 	bool res = false;
 

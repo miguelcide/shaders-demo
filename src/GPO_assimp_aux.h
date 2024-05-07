@@ -7,6 +7,7 @@
 struct escena {
 	unsigned int nObjetos;
 	objeto* objs;
+	GLuint* mats;
 	unsigned int nInstancias;
 	unsigned int* instIdx;
 };

@@ -18,6 +18,8 @@ GLFWwindow* window;
 GLuint prog[2];
 objeto obj;
 struct escena isla;
+struct escena torre;
+struct escena* escenaActual = &isla;
 
 // Dibuja objeto indexado
 void dibujar_indexado(objeto obj) {
@@ -26,10 +28,12 @@ void dibujar_indexado(objeto obj) {
 	glBindVertexArray(0);
 }
 
-void dibujar_escena(struct escena escena) {
-	for (unsigned int i = 0; i < escena.nInstancias; i++) {
-		const unsigned int j = escena.instIdx[i];
-		dibujar_indexado(escena.objs[j]);
+void dibujar_escena() {
+	for (unsigned int i = 0; i < escenaActual->nInstancias; i++) {
+		const unsigned int j = escenaActual->instIdx[i];
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, escenaActual->mats[j]);
+		dibujar_indexado(escenaActual->objs[j]);
 	}
 }
 
@@ -59,6 +63,7 @@ void init_scene()
 
 	obj = cargar_modelo("data/buda_n.bix");
 	isla = cargar_modelo_assimp("data/Island/Island.obj");
+	torre = cargar_modelo_assimp("data/Tower/Tower.obj");
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -97,12 +102,14 @@ void render_scene()
 	// ORDEN de dibujar
 	//dibujar_indexado(obj);
 	transfer_mat4("M", mat4(1.0f)); //Las escenas ya tienen sus matrices de transformación aplicadas
-	dibujar_escena(isla);
+	transfer_int("unit", 0);
+	dibujar_escena();
 }
 
 //////////  FUNCION PARA PROCESAR VALORES DE IMGUI  //////////
 void render_imgui(void) {
 	static int nProg = 0;
+	static int nScene = 0;
 	static struct {
 		float d = 8.0f;
 		float az = 0.0f;
@@ -117,6 +124,16 @@ void render_imgui(void) {
 
 	if (imgui_renderShaderSelect(&nProg))
 		glUseProgram(prog[nProg]);
+	if (imgui_renderSceneSelect(&nScene)) {
+		switch (nScene) {
+			case 0:
+				escenaActual = &isla;
+				break;
+			case 1:
+				escenaActual = &torre;
+				break;
+		}
+	}
 	if (imgui_renderCameraPos(&camara.d, &camara.az, &camara.el))
 		pos_obs = camara.d * vec3(cos(camara.az) * cos(camara.el), sin(camara.el), sin(camara.az) * cos(camara.el));
 	if (imgui_renderLightVec(&luzGlobal.az, &luzGlobal.el))
