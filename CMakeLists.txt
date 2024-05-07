@@ -24,10 +24,19 @@ find_package(OpenGL REQUIRED)
 add_subdirectory(libs/glfw EXCLUDE_FROM_ALL)
 add_subdirectory(libs/glm)
 add_subdirectory(libs/glad)
+set(BUILD_SHARED_LIBS OFF)
+set(ASSIMP_NO_EXPORT ON)
+set(ASSIMP_BUILD_ZLIB ON)
+set(ASSIMP_BUILD_TESTS OFF)
+set(ASSIMP_INSTALL OFF)
+set(ASSIMP_BUILD_ASSIMP_VIEW OFF)
+set(ASSIMP_INJECT_DEBUG_POSTFIX OFF)
+add_subdirectory(libs/assimp)
 
 include_directories(libs/glad/include)
 include_directories(libs/glm)
 include_directories(libs/imgui)
+include_directories(libs/assimp/include)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/include/KHR)
@@ -46,7 +55,7 @@ set(GPO_SOURCE_FILES include/stb/stb_image.h
 					 src/GPO_imgui_aux.cpp
 					 src/GPO_aux.cpp)
 add_executable(gpo_proyecto_final ${GPO_SOURCE_FILES})
-target_link_libraries(gpo_proyecto_final PRIVATE ${OPENGL_LIBRARIES} glfw glm glad_interface)
+target_link_libraries(gpo_proyecto_final PRIVATE ${OPENGL_LIBRARIES} glfw glm glad_interface assimp)
 
 set_target_properties(gpo_proyecto_final
   PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
