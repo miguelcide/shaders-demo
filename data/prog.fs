@@ -5,6 +5,7 @@ in vec3 vision;
 out vec3 col;
 
 uniform bool blinn = false;
+uniform bool toon = false;
 
 uniform sampler2D unit;
 
@@ -14,6 +15,9 @@ uniform vec4 coeficientes;
 
 uniform float grosorBorde;
 uniform vec3 colorBorde;
+
+uniform uint nColoresD = 4u;
+uniform uint nColoresS = 2u;
 
 void main() {
 	vec3 nn = normalize(norm);
@@ -38,9 +42,15 @@ void main() {
 	}
 	specular = (specular > 0 ? pow(specular, coeficientes.w) : 0);
 
-	float ilu = coeficientes.x
-		+ coeficientes.y * difusa
-		+ coeficientes.z * specular;
+	float ilu = coeficientes.x;
+	if (toon) {
+		ilu += floor(difusa * nColoresD) / (nColoresD - 1u) * coeficientes.y
+			+ floor(specular * nColoresS) / (nColoresS - 1u) * coeficientes.z;
+	}
+	else {
+		ilu += coeficientes.y * difusa
+			+ coeficientes.z * specular;
+	}
 
 	col = colorLuz
 		* ilu

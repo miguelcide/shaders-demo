@@ -31,19 +31,21 @@ void imgui_newframe(void) {
 	ImGui::NewFrame();
 }
 
-bool imgui_renderShaderSelect(bool* useBlinn) {
+bool imgui_renderShaderSelect(bool* useBlinn, bool* useToon) {
 	static int sel = 0;
+	bool pressed;
 
 	if (ImGui::CollapsingHeader("Select shader", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::RadioButton("Phong", &sel, 0); ImGui::SameLine();
 		ImGui::RadioButton("Blinn", &sel, 1);
+		pressed = ImGui::Checkbox("Toon-shading", useToon);
 	}
 
 	if (sel != *useBlinn) {
 		*useBlinn = sel;
 		return true;
 	}
-	return false;
+	return pressed;
 }
 
 bool imgui_renderSceneSelect(int* nScene) {

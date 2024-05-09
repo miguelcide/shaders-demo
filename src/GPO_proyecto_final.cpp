@@ -107,7 +107,8 @@ void render_scene()
 
 //////////  FUNCION PARA PROCESAR VALORES DE IMGUI  //////////
 void render_imgui(void) {
-	static bool useBlinn = 0;
+	static bool useBlinn = false;
+	static bool useToon = false;
 	static int nScene = 0;
 	static struct {
 		float d = 8.0f;
@@ -121,8 +122,10 @@ void render_imgui(void) {
 
 	ImGui::Begin("Controls");
 
-	if (imgui_renderShaderSelect(&useBlinn))
+	if (imgui_renderShaderSelect(&useBlinn, &useToon)) {
 		transfer_int("blinn", useBlinn);
+		transfer_int("toon", useToon);
+	}
 	if (imgui_renderSceneSelect(&nScene)) {
 		switch (nScene) {
 			case 0:
