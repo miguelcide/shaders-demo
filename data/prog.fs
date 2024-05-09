@@ -12,20 +12,29 @@ uniform vec3 luz;
 uniform vec3 colorLuz;
 uniform vec4 coeficientes;
 
+uniform float grosorBorde;
+uniform vec3 colorBorde;
+
 void main() {
 	vec3 nn = normalize(norm);
+	vec3 vv = normalize(vision);
+
+	if (dot(vv, nn) < grosorBorde) {
+		col = colorBorde;
+		return;
+	}
 
 	float difusa = dot(luz, nn);
 	if (difusa < 0) difusa = 0;
 
 	float specular;
 	if (blinn) {
-		vec3 halfAngle = normalize(luz + normalize(vision));
+		vec3 halfAngle = normalize(luz + vv);
 		specular = dot(nn, halfAngle);
 	}
 	else {
 		vec3 r = reflect(-luz, nn);
-		specular = dot(r, normalize(vision));
+		specular = dot(r, vv);
 	}
 	specular = (specular > 0 ? pow(specular, coeficientes.w) : 0);
 

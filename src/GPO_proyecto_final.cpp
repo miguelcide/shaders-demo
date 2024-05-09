@@ -72,6 +72,9 @@ vec3 luz = vec3(1, 0, 0);
 vec3 colorLuz = vec3(1, 1, 1);
 vec4 coeficientes = vec4(0.1, 0.6, 0.3, 16);
 
+float grosorBorde = 0.2f;
+vec3 colorBorde = vec3(1, 1, 1);
+
 // Actualizar escena: cambiar posici�n objetos, nuevos objetros, posici�n c�mara, luces, etc.
 void render_scene()
 {
@@ -92,6 +95,8 @@ void render_scene()
 	transfer_vec3("luz", luz);
 	transfer_vec3("colorLuz", colorLuz);
 	transfer_vec4("coeficientes", coeficientes);
+	transfer_float("grosorBorde", grosorBorde);
+	transfer_vec3("colorBorde", colorBorde);
 
 	// ORDEN de dibujar
 	//dibujar_indexado(obj);
@@ -134,6 +139,7 @@ void render_imgui(void) {
 		luz = vec3(cos(luzGlobal.az) * cos(luzGlobal.el), sin(luzGlobal.el), sin(luzGlobal.az) * cos(luzGlobal.el));
 	imgui_renderLightColor(&colorLuz);
 	imgui_renderCoefficients(&coeficientes);
+	imgui_renderBorderSettings(&colorBorde, &grosorBorde);
 
 	ImGui::End();
 }

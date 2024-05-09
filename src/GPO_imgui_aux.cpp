@@ -86,7 +86,7 @@ bool imgui_renderLightVec(float* az, float* el) {
 
 void imgui_renderLightColor(vec3* color) {
 	if (ImGui::CollapsingHeader("Lighting color", ImGuiTreeNodeFlags_DefaultOpen)) {
-		ImGui::ColorPicker3("##color", &color->r, //Esto es una autentica guarrada que puede explotar en cualquier momento
+		ImGui::ColorPicker3("##lightColor", &color->r, //Esto es una autentica guarrada que puede explotar en cualquier momento
 							ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_DisplayRGB);
 	}
 }
@@ -97,6 +97,14 @@ void imgui_renderCoefficients(vec4* coeficientes) {
 		ImGui::SliderFloat("Diffuse##coeficientes", &(coeficientes->y), 0.0f, 1.0f, "%.2f");
 		ImGui::SliderFloat("Specular##coeficientes", &(coeficientes->z), 0.0f, 1.0f, "%.2f");
 		ImGui::SliderFloat("Shininess##coeficientes", &(coeficientes->w), 1.0f, 100.0f, "%.0f");
+	}
+}
+
+void imgui_renderBorderSettings(vec3* color, float* t) {
+	if (ImGui::CollapsingHeader("Border", ImGuiTreeNodeFlags_DefaultOpen)) {
+		ImGui::SliderFloat("Thickness##borderColor", t, 0.0f, 1.0f, "%.1f");
+		ImGui::ColorPicker3("##borderColor", &color->r, //Esto es una autentica guarrada que puede explotar en cualquier momento
+							ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_DisplayRGB);
 	}
 }
 
