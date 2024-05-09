@@ -486,7 +486,7 @@ void transfer_vec2(const char* name, vec2 x)
  else glUniform2fv(loc, 1, &x[0]);
 }
 
-void transfer_int(const char* name, GLuint valor)
+void transfer_int(const char* name, GLint valor)
 {
  GLuint loc;
  GLuint prog;
@@ -498,6 +498,20 @@ void transfer_int(const char* name, GLuint valor)
 	 glfwTerminate(); //exit(EXIT_FAILURE);
  }
  else glUniform1i(loc,valor);
+}
+
+void transfer_uint(const char* name, GLuint valor)
+{
+	GLuint loc;
+	GLuint prog;
+
+	glGetIntegerv(GL_CURRENT_PROGRAM,(GLint*)&prog);
+	loc=glGetUniformLocation(prog,name);
+	if (loc == -1) {
+		printf("No existe variable llamada %s en el programa activo de la GPU (%d)\n", name, prog);
+		glfwTerminate(); //exit(EXIT_FAILURE);
+	}
+	else glUniform1ui(loc,valor);
 }
 
 

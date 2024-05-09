@@ -64,7 +64,8 @@ void transfer_mat3(const char*, mat3);
 void transfer_vec4(const char*, vec4);
 void transfer_vec3(const char*, vec3);
 void transfer_vec2(const char*, vec2);
-void transfer_int(const char*, GLuint);
+void transfer_int(const char*, GLint);
+void transfer_uint(const char*, GLuint);
 void transfer_float(const char*, GLfloat);
 
 

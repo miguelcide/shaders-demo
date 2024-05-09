@@ -109,6 +109,8 @@ void render_scene()
 void render_imgui(void) {
 	static bool useBlinn = false;
 	static bool useToon = false;
+	static unsigned int nColoresD = 4;
+	static unsigned int nColoresS = 2;
 	static int nScene = 0;
 	static struct {
 		float d = 8.0f;
@@ -122,10 +124,6 @@ void render_imgui(void) {
 
 	ImGui::Begin("Controls");
 
-	if (imgui_renderShaderSelect(&useBlinn, &useToon)) {
-		transfer_int("blinn", useBlinn);
-		transfer_int("toon", useToon);
-	}
 	if (imgui_renderSceneSelect(&nScene)) {
 		switch (nScene) {
 			case 0:
@@ -135,6 +133,12 @@ void render_imgui(void) {
 				escenaActual = &torre;
 				break;
 		}
+	}
+	if (imgui_renderShaderSelect(&useBlinn, &useToon, &nColoresD, &nColoresS)) {
+		transfer_int("blinn", useBlinn);
+		transfer_int("toon", useToon);
+		transfer_uint("nColoresD", nColoresD);
+		transfer_uint("nColoresS", nColoresS);
 	}
 	if (imgui_renderCameraPos(&camara.d, &camara.az, &camara.el))
 		pos_obs = camara.d * vec3(cos(camara.az) * cos(camara.el), sin(camara.el), sin(camara.az) * cos(camara.el));
