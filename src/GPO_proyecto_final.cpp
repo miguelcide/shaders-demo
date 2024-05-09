@@ -175,6 +175,7 @@ int main(int argc, char* argv[])
 	}
 
 	limpiar_escena(&isla);
+	limpiar_escena(&torre);
 	terminate_imgui();
 	glfwTerminate();
 	exit(EXIT_SUCCESS);
