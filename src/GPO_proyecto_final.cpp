@@ -15,7 +15,7 @@ const char* prac = "OpenGL (GpO)";   // Nombre de la practica (aparecera en el t
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GLFWwindow* window;
-GLuint prog[2];
+GLuint prog;
 objeto obj;
 struct escena isla;
 struct escena torre;
@@ -48,18 +48,12 @@ void init_scene()
 
 	// Mandar programas a GPU, compilar y crear programa en GPU
 	char* vertex = leer_codigo_de_fichero("data/prog.vs");
-	char* fragment = leer_codigo_de_fichero("data/prog_phong.fs");
-	prog[0] = Compile_Link_Shaders(vertex, fragment);
+	char* fragment = leer_codigo_de_fichero("data/prog.fs");
+	prog = Compile_Link_Shaders(vertex, fragment);
 	delete []vertex;
 	delete []fragment;
 
-	vertex = leer_codigo_de_fichero("data/prog.vs");
-	fragment = leer_codigo_de_fichero("data/prog_blinn.fs");
-	prog[1] = Compile_Link_Shaders(vertex, fragment);
-	delete []vertex;
-	delete []fragment;
-
-	glUseProgram(prog[0]);
+	glUseProgram(prog);
 
 	obj = cargar_modelo("data/buda_n.bix");
 	isla = cargar_modelo_assimp("data/Island/Island.obj");
@@ -93,7 +87,7 @@ void render_scene()
 	mat4 M = translate(vec3(0.0f, -1.0f, 0.0f));
 
 	transfer_mat4("PV", PV);
-	transfer_mat4("M", M);
+	//transfer_mat4("M", M);
 	transfer_vec3("camera", pos_obs);
 	transfer_vec3("luz", luz);
 	transfer_vec3("colorLuz", colorLuz);
@@ -108,7 +102,7 @@ void render_scene()
 
 //////////  FUNCION PARA PROCESAR VALORES DE IMGUI  //////////
 void render_imgui(void) {
-	static int nProg = 0;
+	static bool useBlinn = 0;
 	static int nScene = 0;
 	static struct {
 		float d = 8.0f;
@@ -122,8 +116,8 @@ void render_imgui(void) {
 
 	ImGui::Begin("Controls");
 
-	if (imgui_renderShaderSelect(&nProg))
-		glUseProgram(prog[nProg]);
+	if (imgui_renderShaderSelect(&useBlinn))
+		transfer_int("blinn", useBlinn);
 	if (imgui_renderSceneSelect(&nScene)) {
 		switch (nScene) {
 			case 0:

@@ -9,7 +9,7 @@ void terminate_imgui(void);
 void imgui_newframe(void);
 void imgui_renderframe(void);
 
-bool imgui_renderShaderSelect(int* nProg);
+bool imgui_renderShaderSelect(bool* useBlinn);
 bool imgui_renderSceneSelect(int* nScene);
 bool imgui_renderCameraPos(float* d, float* az, float* el);
 bool imgui_renderLightVec(float* az, float* el);

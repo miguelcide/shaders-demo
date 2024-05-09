@@ -31,7 +31,7 @@ void imgui_newframe(void) {
 	ImGui::NewFrame();
 }
 
-bool imgui_renderShaderSelect(int* nProg) {
+bool imgui_renderShaderSelect(bool* useBlinn) {
 	static int sel = 0;
 
 	if (ImGui::CollapsingHeader("Select shader", ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -39,8 +39,8 @@ bool imgui_renderShaderSelect(int* nProg) {
 		ImGui::RadioButton("Blinn", &sel, 1);
 	}
 
-	if (sel != *nProg) {
-		*nProg = sel;
+	if (sel != *useBlinn) {
+		*useBlinn = sel;
 		return true;
 	}
 	return false;
