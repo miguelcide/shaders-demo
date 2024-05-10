@@ -55,9 +55,13 @@ void init_scene()
 
 	glUseProgram(prog);
 
-	obj = cargar_modelo("data/buda_n.bix");
+	//obj = cargar_modelo("data/buda_n.bix");
+	obj = cargar_modelo("data/esfera_520_n.bix");
 	isla = cargar_modelo_assimp("data/Island/Island.obj");
 	torre = cargar_modelo_assimp("data/Tower/Tower.obj");
+	cargar_textura("data/bayer16.png", GL_TEXTURE1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -101,7 +105,8 @@ void render_scene()
 	// ORDEN de dibujar
 	//dibujar_indexado(obj);
 	transfer_mat4("M", mat4(1.0f)); //Las escenas ya tienen sus matrices de transformación aplicadas
-	transfer_int("unit", 0);
+	transfer_int("baseTexture", 0);
+	transfer_int("bayerT", 1);
 	dibujar_escena();
 }
 
@@ -109,6 +114,7 @@ void render_scene()
 void render_imgui(void) {
 	static bool useBlinn = false;
 	static bool useToon = false;
+	static bool useDither = false;
 	static unsigned int nColoresD = 4;
 	static unsigned int nColoresS = 2;
 	static int nScene = 0;
@@ -134,9 +140,10 @@ void render_imgui(void) {
 				break;
 		}
 	}
-	if (imgui_renderShaderSelect(&useBlinn, &useToon, &nColoresD, &nColoresS)) {
+	if (imgui_renderShaderSelect(&useBlinn, &useToon, &useDither, &nColoresD, &nColoresS)) {
 		transfer_int("blinn", useBlinn);
 		transfer_int("toon", useToon);
+		transfer_int("bayer", useDither);
 		transfer_uint("nColoresD", nColoresD);
 		transfer_uint("nColoresS", nColoresS);
 	}

@@ -6,8 +6,10 @@ out vec3 col;
 
 uniform bool blinn = false;
 uniform bool toon = false;
+uniform bool bayer = false;
 
-uniform sampler2D unit;
+uniform sampler2D baseTexture;
+uniform sampler2D bayerT;
 
 uniform vec3 luz;
 uniform vec3 colorLuz;
@@ -52,7 +54,10 @@ void main() {
 			+ coeficientes.z * specular;
 	}
 
+	if (bayer)
+		ilu = step(texture(bayerT, gl_FragCoord.xy / 16.).r, ilu);
+
 	col = colorLuz
 		* ilu
-		* texture(unit, UV).rgb;
+		* texture(baseTexture, UV).rgb;
 }

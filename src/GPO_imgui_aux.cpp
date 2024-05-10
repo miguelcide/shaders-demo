@@ -31,7 +31,7 @@ void imgui_newframe(void) {
 	ImGui::NewFrame();
 }
 
-bool imgui_renderShaderSelect(bool* useBlinn, bool* useToon, unsigned int* nColoresD, unsigned int* nColoresS) {
+bool imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, unsigned int* nColoresD, unsigned int* nColoresS) {
 	static int sel = 0;
 	bool res;
 
@@ -44,6 +44,7 @@ bool imgui_renderShaderSelect(bool* useBlinn, bool* useToon, unsigned int* nColo
 			res |= ImGui::InputScalar("Nº tones (diffuse)", ImGuiDataType_U32, nColoresD, &one, NULL, "%u");
 			res |= ImGui::InputScalar("Nº tones (specular)", ImGuiDataType_U32, nColoresS, &one, NULL, "%u");
 		}
+		res |= ImGui::Checkbox("Dithering", useDither);
 	}
 
 	if (sel != *useBlinn) {
