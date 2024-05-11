@@ -40,11 +40,12 @@ bool imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, un
 		ImGui::RadioButton("Blinn", &sel, 1);
 		res = ImGui::Checkbox("Toon-shading", useToon);
 		if (*useToon) {
+			ImGui::SameLine();
+			res |= ImGui::Checkbox("Dithering", useDither);
 			const unsigned int one = 1;
 			res |= ImGui::InputScalar("Nº tones (diffuse)", ImGuiDataType_U32, nColoresD, &one, NULL, "%u");
 			res |= ImGui::InputScalar("Nº tones (specular)", ImGuiDataType_U32, nColoresS, &one, NULL, "%u");
 		}
-		res |= ImGui::Checkbox("Dithering", useDither);
 	}
 
 	if (sel != *useBlinn) {

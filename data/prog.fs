@@ -30,8 +30,7 @@ void main() {
 		return;
 	}
 
-	float difusa = dot(luz, nn);
-	if (difusa < 0) difusa = 0;
+	float difusa = max(dot(luz, nn), 0);
 
 	float specular;
 	if (blinn) {
@@ -44,18 +43,28 @@ void main() {
 	}
 	specular = (specular > 0 ? pow(specular, coeficientes.w) : 0);
 
-	float ilu = coeficientes.x;
+	float ilu;
 	if (toon) {
-		ilu += floor(difusa * nColoresD) / (nColoresD - 1u) * coeficientes.y
-			+ floor(specular * nColoresS) / (nColoresS - 1u) * coeficientes.z;
+		float iluDifusa = floor(difusa * nColoresD) / (nColoresD - 1u);
+		float iluSpecular = floor(specular * nColoresS) / (nColoresS - 1u);
+
+		if (bayer) {
+			float edge = texture(bayerT, gl_FragCoord.xy / 16.).r;
+
+			float delta = difusa - iluDifusa;
+			iluDifusa += (step(edge, delta) - step(delta, -edge)) / (nColoresD - 1u);
+
+			delta = specular - iluSpecular;
+			iluSpecular += (step(edge, delta) - step(delta, -edge)) / (nColoresS - 1u);
+		}
+
+		ilu = coeficientes.x + iluDifusa * coeficientes.y + iluSpecular * coeficientes.z;
 	}
 	else {
-		ilu += coeficientes.y * difusa
+		ilu = coeficientes.x
+			+ coeficientes.y * difusa
 			+ coeficientes.z * specular;
 	}
-
-	if (bayer)
-		ilu = step(texture(bayerT, gl_FragCoord.xy / 16.).r, ilu);
 
 	col = colorLuz
 		* ilu
