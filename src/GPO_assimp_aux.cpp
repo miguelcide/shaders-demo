@@ -105,7 +105,6 @@ struct escena cargar_modelo_assimp(const char* file) {
 
 	//Parsear la escena, dejando que la librería aplique todas las matrices de transformación entre otras cosas
 	//El resultado es una estructura en forma de árbol, pero con las transformaciones solo tendrá profundidad de 1
-	//TODO: Es posible que el nodo raíz contenga toda la escena si es sencilla, cosa que no está soportada aún
 	const aiScene* scene = importer.ReadFile(file, aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_PreTransformVertices);
 	if (nullptr == scene) {
 		fprintf(stderr, "%s\n", importer.GetErrorString());
@@ -134,11 +133,18 @@ struct escena cargar_modelo_assimp(const char* file) {
 	//Contamos el número de instancias totales del sistema
 	unsigned int nChildren = scene->mRootNode->mNumChildren;
 	escena.nInstancias = 0;
+	if (!nChildren)
+		escena.nInstancias = scene->mRootNode->mNumMeshes;
 	for (unsigned int i = 0; i < nChildren; i++)
 		escena.nInstancias += scene->mRootNode->mChildren[i]->mNumMeshes;
 
 	//Cada instancia es una referencia a una de las mayas
 	escena.instIdx = new unsigned int[escena.nInstancias];
+	if (!nChildren) {
+		aiNode* node = scene->mRootNode;
+		for (unsigned int k = 0; k < node->mNumMeshes; k++)
+			escena.instIdx[k] = node->mMeshes[k];
+	}
 	for (unsigned int i = 0, j = 0; i < nChildren; i++) {
 		aiNode* node = scene->mRootNode->mChildren[i];
 		for (unsigned int k = 0; k < node->mNumMeshes; k++)
