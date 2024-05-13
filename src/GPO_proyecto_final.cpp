@@ -47,8 +47,8 @@ void init_scene()
 	glViewport(0, 0, width, height);
 
 	// Mandar programas a GPU, compilar y crear programa en GPU
-	char* vertex = leer_codigo_de_fichero("data/prog.vs");
-	char* fragment = leer_codigo_de_fichero("data/prog.fs");
+	char* vertex = leer_codigo_de_fichero("data/shaders/prog.vs");
+	char* fragment = leer_codigo_de_fichero("data/shaders/prog.fs");
 	prog = Compile_Link_Shaders(vertex, fragment);
 	delete []vertex;
 	delete []fragment;
