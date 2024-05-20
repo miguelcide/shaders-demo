@@ -1,15 +1,16 @@
 #version 330 core
-in vec3 norm;
-in vec2 UV;
-in vec3 vision;
 out vec3 col;
 
 uniform bool blinn = false;
 uniform bool toon = false;
 uniform bool bayer = false;
 
-uniform sampler2D baseTexture;
+uniform sampler2D gAlbedo;
+uniform sampler2D gNormals;
+uniform sampler2D gWorldPos;
 uniform sampler2D bayerT;
+
+uniform vec3 camera;
 
 uniform vec3 luz;
 uniform vec3 colorLuz;
@@ -21,14 +22,21 @@ uniform vec3 colorBorde;
 uniform uint nColoresD = 4u;
 uniform uint nColoresS = 2u;
 
+uniform vec2 resolution = vec2(800, 600);
+
 void main() {
-	vec3 nn = normalize(norm);
-	vec3 vv = normalize(vision);
+	vec2 fragCoord = gl_FragCoord.xy / resolution;
+	vec3 nn = texture(gNormals, fragCoord).rgb;
+	vec3 vv = normalize(camera - texture(gWorldPos, fragCoord).rgb);
 
 	if (dot(vv, nn) < grosorBorde) {
 		col = colorBorde;
 		return;
 	}
+	//Aqui va sobel, por ahora solo con las normales de gNormals
+	//TODO: Hacer que el buffer de profundidad sea una textura para poder samplearla
+	//gNormals se muestrea con gl_FragCoord.xy (+-1) / resolution
+
 
 	float difusa = max(dot(luz, nn), 0);
 
@@ -68,5 +76,5 @@ void main() {
 
 	col = colorLuz
 		* ilu
-		* texture(baseTexture, UV).rgb;
+		* texture(gAlbedo, fragCoord).rgb;
 }
