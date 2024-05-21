@@ -29,7 +29,9 @@ void main() {
 	vec3 nn = texture(gNormals, fragCoord).rgb;
 	vec3 vv = normalize(camera - texture(gWorldPos, fragCoord).rgb);
 
-	if (dot(vv, nn) < grosorBorde) {
+	if (length(nn) == 0)
+		discard;
+	else if (dot(vv, nn) < grosorBorde) {
 		col = colorBorde;
 		return;
 	}
