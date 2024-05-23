@@ -223,7 +223,8 @@ void render_scene() {
 	transfer_vec2("resolution", vec2(ANCHO, ALTO));
 	transfer_int("bayerT", 0);
 	transfer_int("gAlbedo", 1);
-	transfer_int("gDepth", 2);
+	//Dejar comentado hasta que vayamos a usarlo
+	//transfer_int("gDepth", 2);
 	transfer_int("gNormals", 3);
 	transfer_int("gWorldPos", 4);
 	dibujar_quad();
