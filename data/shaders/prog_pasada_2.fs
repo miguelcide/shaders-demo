@@ -36,9 +36,7 @@ void main() {
 		col = colorBorde;
 		return;
 	}
-	//Aqui va sobel, por ahora solo con las normales de gNormals
-	//TODO: Hacer que el buffer de profundidad sea una textura para poder samplearla
-	//gNormals se muestrea con gl_FragCoord.xy (+-1) / resolution
+	//Aqui va sobel
 
 
 	float difusa = max(dot(luz, nn), 0);
