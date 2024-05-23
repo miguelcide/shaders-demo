@@ -6,6 +6,7 @@ uniform bool toon = false;
 uniform bool bayer = false;
 
 uniform sampler2D gAlbedo;
+uniform sampler2D gDepth;
 uniform sampler2D gNormals;
 uniform sampler2D gWorldPos;
 uniform sampler2D bayerT;

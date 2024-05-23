@@ -52,8 +52,10 @@ void dibujar_quad() {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, gBuffer.albedo);
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, gBuffer.normals);
+	glBindTexture(GL_TEXTURE_2D, gBuffer.depth);
 	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, gBuffer.normals);
+	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, gBuffer.position);
 
 	glBindVertexArray(quadVAO);
@@ -85,11 +87,14 @@ void crear_gBuffer() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gBuffer.position, 0);
 
-	glGenRenderbuffers(1, &gBuffer.depth);
-	glBindRenderbuffer(GL_RENDERBUFFER, gBuffer.depth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, ANCHO, ALTO);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, gBuffer.depth);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	glGenTextures(1, &gBuffer.depth);
+	glBindTexture(GL_TEXTURE_2D, gBuffer.depth);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, ANCHO, ALTO, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, gBuffer.depth, 0);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -210,8 +215,9 @@ void render_scene() {
 	transfer_vec2("resolution", vec2(ANCHO, ALTO));
 	transfer_int("bayerT", 0);
 	transfer_int("gAlbedo", 1);
-	transfer_int("gNormals", 2);
-	transfer_int("gWorldPos", 3);
+	transfer_int("gDepth", 2);
+	transfer_int("gNormals", 3);
+	transfer_int("gWorldPos", 4);
 	dibujar_quad();
 }
 
