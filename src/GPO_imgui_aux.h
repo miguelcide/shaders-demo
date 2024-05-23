@@ -10,7 +10,7 @@ void imgui_newframe(void);
 void imgui_renderframe(void);
 
 bool imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, unsigned int* nColoresD, unsigned int* nColoresS);
-bool imgui_renderSceneSelect(int* nScene);
+bool imgui_renderSceneSelect(int* nScene, bool* useTextures);
 bool imgui_renderCameraPos(float* d, float* az, float* el);
 bool imgui_renderLightVec(float* az, float* el);
 void imgui_renderLightColor(vec3* color);

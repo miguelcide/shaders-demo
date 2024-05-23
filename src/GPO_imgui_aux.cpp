@@ -55,12 +55,13 @@ bool imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, un
 	return res;
 }
 
-bool imgui_renderSceneSelect(int* nScene) {
+bool imgui_renderSceneSelect(int* nScene, bool* useTextures) {
 	static int sel = 0;
 
 	if (ImGui::CollapsingHeader("Select scene", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::RadioButton("Isla", &sel, 0); ImGui::SameLine();
 		ImGui::RadioButton("Torre", &sel, 1);
+		ImGui::Checkbox("Show textures", useTextures);
 	}
 
 	if (sel != *nScene) {

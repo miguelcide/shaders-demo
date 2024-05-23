@@ -23,11 +23,9 @@ struct {
 	GLuint albedo;
 	GLuint position;
 } gBuffer;
-GLuint bayer;
+GLuint bayer, blanco;
 GLuint quadVAO;
-objeto obj;
-struct escena isla;
-struct escena torre;
+struct escena isla, torre;
 struct escena* escenaActual = &isla;
 
 // Dibuja objeto indexado
@@ -36,11 +34,12 @@ void dibujar_indexado(objeto obj) {
 	glDrawElements(GL_TRIANGLES,obj.Ni,obj.tipo_indice,(void*)0);  // Dibujar (indexado)
 }
 
+bool useTextures = false;
 void dibujar_escena() {
 	for (unsigned int i = 0; i < escenaActual->nInstancias; i++) {
 		const unsigned int j = escenaActual->instIdx[i];
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, escenaActual->mats[j]);
+		glBindTexture(GL_TEXTURE_2D, useTextures ? escenaActual->mats[j] : blanco);
 		dibujar_indexado(escenaActual->objs[j]);
 	}
 	glBindVertexArray(0);
@@ -136,12 +135,18 @@ void init_scene() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//Cargar modelos
-	obj = cargar_modelo("data/buda_n.bix");
 	isla = cargar_modelo_assimp("data/Island/Island.obj");
 	torre = cargar_modelo_assimp("data/Tower/Tower.obj");
 	bayer = cargar_textura("data/bayer16.png", GL_TEXTURE0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//Literalmente un pixel blanco, para ver el modelo "sin textura"
+	glGenTextures(1, &blanco);
+	glBindTexture(GL_TEXTURE_2D, blanco);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLubyte[]) {255, 255, 255});
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -225,7 +230,7 @@ void render_imgui(void) {
 
 	ImGui::Begin("Controls");
 
-	if (imgui_renderSceneSelect(&nScene)) {
+	if (imgui_renderSceneSelect(&nScene, &useTextures)) {
 		switch (nScene) {
 			case 0:
 				escenaActual = &isla;
