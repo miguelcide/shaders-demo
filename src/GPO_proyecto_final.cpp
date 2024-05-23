@@ -134,7 +134,7 @@ void init_scene() {
 	glBindVertexArray(quadVAO);
 	glGenBuffers(1, &quadVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-	glBufferData(GL_ARRAY_BUFFER, 8*sizeof(float), (float[]){1, -1, 1, 1, -1, -1, -1, 1}, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 8*sizeof(float), (const float[]){1, -1, 1, 1, -1, -1, -1, 1}, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -144,7 +144,7 @@ void init_scene() {
 	glGenFramebuffers(1, &gBuffer.FBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer.FBO);
 	crear_gBuffer();
-	glDrawBuffers(3, (GLenum[]){GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2});
+	glDrawBuffers(3, (const GLenum[]){GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2});
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//Cargar modelos
@@ -156,7 +156,7 @@ void init_scene() {
 	//Literalmente un pixel blanco, para ver el modelo "sin textura"
 	glGenTextures(1, &blanco);
 	glBindTexture(GL_TEXTURE_2D, blanco);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLubyte[]) {255, 255, 255});
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, (const GLubyte[]) {255, 255, 255});
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -182,6 +182,9 @@ bool useDither = false;
 bool useToon = false;
 unsigned int nColoresD = 4;
 unsigned int nColoresS = 2;
+
+//Sobel
+bool useSobel = false;
 
 //Bordes
 float grosorBorde = 0.2f;
@@ -255,7 +258,7 @@ void render_imgui(void) {
 				break;
 		}
 	}
-	imgui_renderShaderSelect(&useBlinn, &useToon, &useDither, &nColoresD, &nColoresS);
+	imgui_renderShaderSelect(&useBlinn, &useToon, &useDither, &useSobel, &nColoresD, &nColoresS);
 	if (imgui_renderCameraPos(&camara.d, &camara.az, &camara.el))
 		pos_obs = camara.d * vec3(cos(camara.az) * cos(camara.el), sin(camara.el), sin(camara.az) * cos(camara.el));
 	if (imgui_renderLightVec(&luzGlobal.az, &luzGlobal.el))

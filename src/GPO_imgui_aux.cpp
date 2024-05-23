@@ -31,14 +31,15 @@ void imgui_newframe(void) {
 	ImGui::NewFrame();
 }
 
-bool imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, unsigned int* nColoresD, unsigned int* nColoresS) {
+bool imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, bool* useSobel, unsigned int* nColoresD, unsigned int* nColoresS) {
 	static int sel = 0;
-	bool res;
+	bool res, sobel;
 
 	if (ImGui::CollapsingHeader("Select shader", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::RadioButton("Phong", &sel, 0); ImGui::SameLine();
 		ImGui::RadioButton("Blinn", &sel, 1);
 		res = ImGui::Checkbox("Toon-shading", useToon);
+		sobel = ImGui::Checkbox("Sobel", useSobel);
 		if (*useToon) {
 			ImGui::SameLine();
 			res |= ImGui::Checkbox("Dithering", useDither);
