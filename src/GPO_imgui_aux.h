@@ -15,4 +15,4 @@ bool imgui_renderCameraPos(float* d, float* az, float* el);
 bool imgui_renderLightVec(float* az, float* el);
 void imgui_renderLightColor(vec3* color);
 void imgui_renderCoefficients(vec4* coeficientes);
-void imgui_renderBorderSettings(vec3* color, float* t, float* t2);
+void imgui_renderBorderSettings(vec3* color, float* t);
