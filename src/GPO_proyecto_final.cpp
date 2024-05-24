@@ -34,7 +34,7 @@ void dibujar_indexado(objeto obj) {
 	glDrawElements(GL_TRIANGLES,obj.Ni,obj.tipo_indice,(void*)0);  // Dibujar (indexado)
 }
 
-bool useTextures = false;
+bool useTextures = true;
 void dibujar_escena() {
 	for (unsigned int i = 0; i < escenaActual->nInstancias; i++) {
 		const unsigned int j = escenaActual->instIdx[i];
@@ -184,10 +184,12 @@ unsigned int nColoresD = 4;
 unsigned int nColoresS = 2;
 
 //Sobel
-bool useSobel = false;
+bool useSobelTex = false;
+bool useSobelNorm = false;
 
 //Bordes
 float grosorBorde = 0.2f;
+float normalBorde = 0.2f;
 vec3 colorBorde = vec3(1, 1, 1);
 
 // Actualizar escena: cambiar posici�n objetos, nuevos objetros, posici�n c�mara, luces, etc.
@@ -217,10 +219,13 @@ void render_scene() {
 	transfer_vec3("colorLuz", colorLuz);
 	transfer_vec4("coeficientes", coeficientes);
 	transfer_float("grosorBorde", grosorBorde);
+	transfer_float("normalBorde", normalBorde);
 	transfer_vec3("colorBorde", colorBorde);
 	transfer_int("blinn", useBlinn);
 	transfer_int("toon", useToon);
 	transfer_int("bayer", useDither);
+	transfer_int("useSobelTex", useSobelTex);
+	transfer_int("useSobelNorm", useSobelNorm);
 	transfer_uint("nColoresD", nColoresD);
 	transfer_uint("nColoresS", nColoresS);
 	transfer_vec2("resolution", vec2(ANCHO, ALTO));
@@ -258,14 +263,14 @@ void render_imgui(void) {
 				break;
 		}
 	}
-	imgui_renderShaderSelect(&useBlinn, &useToon, &useDither, &useSobel, &nColoresD, &nColoresS);
+	imgui_renderShaderSelect(&useBlinn, &useToon, &useDither, &useSobelTex, &useSobelNorm, &nColoresD, &nColoresS);
 	if (imgui_renderCameraPos(&camara.d, &camara.az, &camara.el))
 		pos_obs = camara.d * vec3(cos(camara.az) * cos(camara.el), sin(camara.el), sin(camara.az) * cos(camara.el));
 	if (imgui_renderLightVec(&luzGlobal.az, &luzGlobal.el))
 		luz = vec3(cos(luzGlobal.az) * cos(luzGlobal.el), sin(luzGlobal.el), sin(luzGlobal.az) * cos(luzGlobal.el));
 	imgui_renderLightColor(&colorLuz);
 	imgui_renderCoefficients(&coeficientes);
-	imgui_renderBorderSettings(&colorBorde, &grosorBorde);
+	imgui_renderBorderSettings(&colorBorde, &grosorBorde, &normalBorde);
 
 	ImGui::End();
 }

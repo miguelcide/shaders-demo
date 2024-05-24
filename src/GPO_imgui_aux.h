@@ -9,10 +9,10 @@ void terminate_imgui(void);
 void imgui_newframe(void);
 void imgui_renderframe(void);
 
-bool imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, bool* useSobel, unsigned int* nColoresD, unsigned int* nColoresS);
+bool imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, bool* useSobelTex, bool* useSobelNorm, unsigned int* nColoresD, unsigned int* nColoresS);
 bool imgui_renderSceneSelect(int* nScene, bool* useTextures);
 bool imgui_renderCameraPos(float* d, float* az, float* el);
 bool imgui_renderLightVec(float* az, float* el);
 void imgui_renderLightColor(vec3* color);
 void imgui_renderCoefficients(vec4* coeficientes);
-void imgui_renderBorderSettings(vec3* color, float* t);
+void imgui_renderBorderSettings(vec3* color, float* t, float* t2);
