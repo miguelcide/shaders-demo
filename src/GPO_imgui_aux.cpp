@@ -31,17 +31,18 @@ void imgui_newframe(void) {
 	ImGui::NewFrame();
 }
 
-bool imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, bool* useSobelTex, bool* useSobelNorm, 
-								unsigned int* nColoresD, unsigned int* nColoresS) {
+bool imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, bool* useSobelTex, bool* useSobelNorm,
+								bool* useSobelDepth, unsigned int* nColoresD, unsigned int* nColoresS) {
 	static int sel = 0;
-	bool res, sobel;
+	bool res;
 
 	if (ImGui::CollapsingHeader("Select shader", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::RadioButton("Phong", &sel, 0); ImGui::SameLine();
 		ImGui::RadioButton("Blinn", &sel, 1);
+		ImGui::Checkbox("Sobel sobre tex", useSobelTex);
+		ImGui::Checkbox("Sobel sobre norm", useSobelNorm);
+		ImGui::Checkbox("Sobel sobre depth", useSobelDepth);
 		res = ImGui::Checkbox("Toon-shading", useToon);
-		sobel = ImGui::Checkbox("Sobel sobre tex", useSobelTex);
-		sobel = ImGui::Checkbox("Sobel sobre norm", useSobelNorm);
 		if (*useToon) {
 			ImGui::SameLine();
 			res |= ImGui::Checkbox("Dithering", useDither);
@@ -115,7 +116,7 @@ void imgui_renderCoefficients(vec4* coeficientes) {
 
 void imgui_renderBorderSettings(vec3* color, float* tex_treshold) {
 	if (ImGui::CollapsingHeader("Border", ImGuiTreeNodeFlags_DefaultOpen)) {
-		ImGui::SliderFloat("Border Threshold##borderColor", tex_treshold, 0.0f, 10.0f, "%.2f");
+		ImGui::SliderFloat("Border Threshold##borderColor", tex_treshold, 0.0f, 5.0f, "%.2f");
 
 		ImGui::ColorPicker3("##borderColor", &color->r, //Esto es una autentica guarrada que puede explotar en cualquier momento
 							ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_DisplayRGB);

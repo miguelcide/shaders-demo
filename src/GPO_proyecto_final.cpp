@@ -186,6 +186,7 @@ unsigned int nColoresS = 2;
 //Sobel
 bool useSobelTex = false;
 bool useSobelNorm = false;
+bool useSobelDepth = false;
 
 //Bordes
 float grosorBorde = 3.5f;
@@ -224,13 +225,13 @@ void render_scene() {
 	transfer_int("bayer", useDither);
 	transfer_int("useSobelTex", useSobelTex);
 	transfer_int("useSobelNorm", useSobelNorm);
+	transfer_int("useSobelDepth", useSobelDepth);
 	transfer_uint("nColoresD", nColoresD);
 	transfer_uint("nColoresS", nColoresS);
 	transfer_vec2("resolution", vec2(ANCHO, ALTO));
 	transfer_int("bayerT", 0);
 	transfer_int("gAlbedo", 1);
-	//Dejar comentado hasta que vayamos a usarlo
-	//transfer_int("gDepth", 2);
+	transfer_int("gDepth", 2);
 	transfer_int("gNormals", 3);
 	transfer_int("gWorldPos", 4);
 	dibujar_quad();
@@ -261,7 +262,7 @@ void render_imgui(void) {
 				break;
 		}
 	}
-	imgui_renderShaderSelect(&useBlinn, &useToon, &useDither, &useSobelTex, &useSobelNorm, &nColoresD, &nColoresS);
+	imgui_renderShaderSelect(&useBlinn, &useToon, &useDither, &useSobelTex, &useSobelNorm, &useSobelDepth, &nColoresD, &nColoresS);
 	if (imgui_renderCameraPos(&camara.d, &camara.az, &camara.el))
 		pos_obs = camara.d * vec3(cos(camara.az) * cos(camara.el), sin(camara.el), sin(camara.az) * cos(camara.el));
 	if (imgui_renderLightVec(&luzGlobal.az, &luzGlobal.el))

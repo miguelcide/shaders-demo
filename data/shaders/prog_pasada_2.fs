@@ -6,6 +6,7 @@ uniform bool toon = false;
 uniform bool bayer = false;
 uniform bool useSobelTex = false;
 uniform bool useSobelNorm = false;
+uniform bool useSobelDepth = false;
 
 uniform sampler2D gAlbedo;
 uniform sampler2D gDepth;
@@ -39,29 +40,27 @@ float sobel(sampler2D gBuffer) {
 	vec2 texelSize = 1.0 / resolution;
 	vec3 sobelX, sobelY;
 
-	sobelX =	texture(gBuffer, (gl_FragCoord.xy + vec2(-1, -1)) * texelSize).rgb * -1.0 +
+	sobelX = abs(texture(gBuffer, (gl_FragCoord.xy + vec2(-1, -1)) * texelSize).rgb * -1.0 +
 				texture(gBuffer, (gl_FragCoord.xy + vec2( 1, -1)) * texelSize).rgb *  1.0 +
 				texture(gBuffer, (gl_FragCoord.xy + vec2(-1,  0)) * texelSize).rgb * -2.0 +
 				texture(gBuffer, (gl_FragCoord.xy + vec2( 1,  0)) * texelSize).rgb *  2.0 +
 				texture(gBuffer, (gl_FragCoord.xy + vec2(-1,  1)) * texelSize).rgb * -1.0 +
-				texture(gBuffer, (gl_FragCoord.xy + vec2( 1,  1)) * texelSize).rgb *  1.0;
+				texture(gBuffer, (gl_FragCoord.xy + vec2( 1,  1)) * texelSize).rgb *  1.0);
 
-	sobelY =	texture(gBuffer, (gl_FragCoord.xy + vec2(-1, -1)) * texelSize).rgb * -1.0 +
+	sobelY = abs(texture(gBuffer, (gl_FragCoord.xy + vec2(-1, -1)) * texelSize).rgb * -1.0 +
 				texture(gBuffer, (gl_FragCoord.xy + vec2(-1,  1)) * texelSize).rgb *  1.0 +
 				texture(gBuffer, (gl_FragCoord.xy + vec2( 0, -1)) * texelSize).rgb * -2.0 +
 				texture(gBuffer, (gl_FragCoord.xy + vec2( 0,  1)) * texelSize).rgb *  2.0 +
 				texture(gBuffer, (gl_FragCoord.xy + vec2( 1, -1)) * texelSize).rgb * -1.0 +
-				texture(gBuffer, (gl_FragCoord.xy + vec2( 1,  1)) * texelSize).rgb *  1.0;
+				texture(gBuffer, (gl_FragCoord.xy + vec2( 1,  1)) * texelSize).rgb *  1.0);
 
-	return length(sqrt(sobelX * sobelX + sobelY * sobelY));
+	return length(max(sobelX, sobelY));
 }
 
 void main() {
 	vec2 fragCoord = gl_FragCoord.xy / resolution; //pos del pixel
 	vec3 nn = texture(gNormals, fragCoord).rgb;
 	vec3 vv = normalize(camera - texture(gWorldPos, fragCoord).rgb);
-	float z = texture(gDepth, fragCoord).r;
-	float depthThreshold = 0.5;
 
 	if (length(nn) == 0)
 		discard;
@@ -71,11 +70,17 @@ void main() {
 	// }
 
 	//Aqui va sobel
+	//Normalizar el valor dividiendo entre la longitud del vector más largo posible
+	//Esa es la idea al menos pero como mi cerebro es chiquito pues no lo estoy haciendo bien
+	//y el threshold claramente no hace lo que quiero que haga
+	//TODO: Ver el motivo por el que soy incapaz de hacer que el resultado esté en el rango 0-1
 	float magnitude = 0;
 	if (useSobelTex)
-		magnitude = max(magnitude, sobel(gAlbedo));
+		magnitude = max(magnitude, sobel(gAlbedo) / length(vec3(4,4,4)));
 	if (useSobelNorm)
-		magnitude = max(magnitude, sobel(gNormals));
+		magnitude = max(magnitude, sobel(gNormals) / length(vec3(4,4,4)));
+	if (useSobelDepth)
+		magnitude = max(magnitude, sobel(gDepth) / length(vec3(4,0,0)));
 	if (magnitude >= grosorBorde) {
 		col = colorBorde;
 		return;
