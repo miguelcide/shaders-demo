@@ -175,6 +175,7 @@ float fov = 35.0f, aspect = 4.0f / 3.0f;
 bool useBlinn = false;
 vec3 luz = vec3(1, 0, 0);
 vec3 colorLuz = vec3(1, 1, 1);
+vec3 colorFondo = vec3(0.588, 0.863, 1);
 vec4 coeficientes = vec4(0.1, 0.6, 0.3, 16);
 
 //Toon + dither
@@ -189,8 +190,8 @@ bool useSobelNorm = false;
 bool useSobelDepth = false;
 
 //Bordes
-float grosorBorde = 3.5f;
-vec3 colorBorde = vec3(1, 1, 1);
+float grosorBorde = 0.5f;
+vec3 colorBorde = vec3(0, 0, 0);
 
 // Actualizar escena: cambiar posici�n objetos, nuevos objetros, posici�n c�mara, luces, etc.
 void render_scene() {
@@ -211,7 +212,7 @@ void render_scene() {
 
 	//Pasada 2
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClearColor(0.0f,0.0f,0.0f,1.0f);
+	glClearColor(colorFondo.x, colorFondo.y, colorFondo.z, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(prog[1]);
 	transfer_vec3("camera", pos_obs);
@@ -267,7 +268,7 @@ void render_imgui(void) {
 		pos_obs = camara.d * vec3(cos(camara.az) * cos(camara.el), sin(camara.el), sin(camara.az) * cos(camara.el));
 	if (imgui_renderLightVec(&luzGlobal.az, &luzGlobal.el))
 		luz = vec3(cos(luzGlobal.az) * cos(luzGlobal.el), sin(luzGlobal.el), sin(luzGlobal.az) * cos(luzGlobal.el));
-	imgui_renderLightColor(&colorLuz);
+	imgui_renderLightColor(&colorLuz, &colorFondo);
 	imgui_renderCoefficients(&coeficientes);
 	imgui_renderBorderSettings(&colorBorde, &grosorBorde);
 

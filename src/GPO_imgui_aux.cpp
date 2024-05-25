@@ -98,15 +98,17 @@ bool imgui_renderLightVec(float* az, float* el) {
 	return res;
 }
 
-void imgui_renderLightColor(vec3* color) {
-	if (ImGui::CollapsingHeader("Lighting color", ImGuiTreeNodeFlags_DefaultOpen)) {
-		ImGui::ColorPicker3("##lightColor", &color->r, //Esto es una autentica guarrada que puede explotar en cualquier momento
+void imgui_renderLightColor(vec3* lightColor, vec3* bgColor) {
+	if (ImGui::CollapsingHeader("Scene colors", ImGuiTreeNodeFlags_DefaultOpen)) {
+		ImGui::ColorPicker3("Light color", &lightColor->r, //Esto es una autentica guarrada que puede explotar en cualquier momento
+							ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_DisplayRGB);
+		ImGui::ColorPicker3("Sky color", &bgColor->r,
 							ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_DisplayRGB);
 	}
 }
 
 void imgui_renderCoefficients(vec4* coeficientes) {
-	if (ImGui::CollapsingHeader("Lighting coefficients", ImGuiTreeNodeFlags_DefaultOpen)) {
+	if (ImGui::CollapsingHeader("Material coefficients", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::SliderFloat("Ambient##coeficientes", &(coeficientes->x), 0.0f, 1.0f, "%.2f");
 		ImGui::SliderFloat("Diffuse##coeficientes", &(coeficientes->y), 0.0f, 1.0f, "%.2f");
 		ImGui::SliderFloat("Specular##coeficientes", &(coeficientes->z), 0.0f, 1.0f, "%.2f");
@@ -116,8 +118,7 @@ void imgui_renderCoefficients(vec4* coeficientes) {
 
 void imgui_renderBorderSettings(vec3* color, float* tex_treshold) {
 	if (ImGui::CollapsingHeader("Border", ImGuiTreeNodeFlags_DefaultOpen)) {
-		ImGui::SliderFloat("Border Threshold##borderColor", tex_treshold, 0.0f, 5.0f, "%.2f");
-
+		ImGui::SliderFloat("Border Threshold##borderColor", tex_treshold, 0.0f, 2.0f, "%.2f");
 		ImGui::ColorPicker3("##borderColor", &color->r, //Esto es una autentica guarrada que puede explotar en cualquier momento
 							ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_DisplayRGB);
 	}
