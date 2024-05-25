@@ -57,6 +57,19 @@ float sobel(sampler2D gBuffer) {
 	return length(max(sobelX, sobelY));
 }
 
+float normal_edge_detection(sampler2D gBuffer){
+	vec2 texelSize = 1.0 / resolution;
+
+	vec3 center = texture(gBuffer, (gl_FragCoord.xy) * texelSize).rgb;
+	vec3 left = texture(gBuffer, (gl_FragCoord.xy + vec2(0, -1)) * texelSize).rgb;
+	vec3 right = texture(gBuffer, (gl_FragCoord.xy + vec2(0, 1)) * texelSize).rgb;
+	vec3 top = texture(gBuffer, (gl_FragCoord.xy + vec2(1, 0)) * texelSize).rgb;
+	vec3 bottom = texture(gBuffer, (gl_FragCoord.xy + vec2(-1, 0)) * texelSize).rgb;
+	
+	vec3 res = abs(left - center) + abs(right - center) + abs(top - center) + abs(bottom - center);
+	return length(res);
+}
+
 void main() {
 	vec2 fragCoord = gl_FragCoord.xy / resolution; //pos del pixel
 	vec3 nn = texture(gNormals, fragCoord).rgb;
@@ -74,13 +87,18 @@ void main() {
 	//Esa es la idea al menos pero como mi cerebro es chiquito pues no lo estoy haciendo bien
 	//y el threshold claramente no hace lo que quiero que haga
 	//TODO: Ver el motivo por el que soy incapaz de hacer que el resultado esté en el rango 0-1
-	float magnitude = 0;
+	float magnitude = 0, normalMagnitude = 0;
 	if (useSobelTex)
-		magnitude = max(magnitude, sobel(gAlbedo) / length(vec3(4,4,4)));
+		// magnitude = max(magnitude, clamp(sobel(gAlbedo) / 16, 0.0, 1.0));
+		magnitude = max(magnitude, sobel(gAlbedo) / 4);
 	if (useSobelNorm)
-		magnitude = max(magnitude, sobel(gNormals) / length(vec3(4,4,4)));
+		// magnitude = max(magnitude, clamp(sobel(gNormals) / 64, 0.0, 1.0)); //norm con los cuadrados para bajar el borde de las normales
+		//magnitude = max(magnitude, sobel(gNormals) / 8);
+		normalMagnitude = normal_edge_detection(gNormals);
 	if (useSobelDepth)
-		magnitude = max(magnitude, sobel(gDepth) / length(vec3(4,0,0)));
+		// magnitude = max(magnitude, clamp(sobel(gDepth)/ 16, 0.0, 1.0));
+		magnitude = max(magnitude, sobel(gDepth) / 4);
+		
 	if (magnitude >= grosorBorde) {
 		col = colorBorde;
 		return;
