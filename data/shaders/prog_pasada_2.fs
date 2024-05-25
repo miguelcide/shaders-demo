@@ -21,6 +21,7 @@ uniform vec3 colorLuz;
 uniform vec4 coeficientes;
 
 uniform float grosorBorde;
+uniform float normalBorde;
 uniform vec3 colorBorde;
 
 uniform uint nColoresD = 4u;
@@ -82,11 +83,6 @@ void main() {
 	// 	return;
 	// }
 
-	//Aqui va sobel
-	//Normalizar el valor dividiendo entre la longitud del vector más largo posible
-	//Esa es la idea al menos pero como mi cerebro es chiquito pues no lo estoy haciendo bien
-	//y el threshold claramente no hace lo que quiero que haga
-	//TODO: Ver el motivo por el que soy incapaz de hacer que el resultado esté en el rango 0-1
 	float magnitude = 0, normalMagnitude = 0;
 	if (useSobelTex)
 		// magnitude = max(magnitude, clamp(sobel(gAlbedo) / 16, 0.0, 1.0));
@@ -99,6 +95,11 @@ void main() {
 		// magnitude = max(magnitude, clamp(sobel(gDepth)/ 16, 0.0, 1.0));
 		magnitude = max(magnitude, sobel(gDepth) / 4);
 		
+	if (normalMagnitude >= normalBorde)	{
+		col = colorBorde;
+		return;
+	}
+
 	if (magnitude >= grosorBorde) {
 		col = colorBorde;
 		return;

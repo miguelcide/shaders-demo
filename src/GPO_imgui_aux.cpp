@@ -116,9 +116,11 @@ void imgui_renderCoefficients(vec4* coeficientes) {
 	}
 }
 
-void imgui_renderBorderSettings(vec3* color, float* tex_treshold) {
+void imgui_renderBorderSettings(vec3* color, float* tex_treshold, float* norm_treshold) {
 	if (ImGui::CollapsingHeader("Border", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::SliderFloat("Border Threshold##borderColor", tex_treshold, 0.0f, 2.0f, "%.2f");
+		ImGui::SliderFloat("Normal Threshold##borderColor", norm_treshold, 0.0f, 2.0f, "%.2f");
+
 		ImGui::ColorPicker3("##borderColor", &color->r, //Esto es una autentica guarrada que puede explotar en cualquier momento
 							ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_DisplayRGB);
 	}

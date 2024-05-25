@@ -191,6 +191,7 @@ bool useSobelDepth = false;
 
 //Bordes
 float grosorBorde = 0.5f;
+float normalBorde = 0.2f;
 vec3 colorBorde = vec3(0, 0, 0);
 
 // Actualizar escena: cambiar posici�n objetos, nuevos objetros, posici�n c�mara, luces, etc.
@@ -220,6 +221,7 @@ void render_scene() {
 	transfer_vec3("colorLuz", colorLuz);
 	transfer_vec4("coeficientes", coeficientes);
 	transfer_float("grosorBorde", grosorBorde);
+	transfer_float("normalBorde", normalBorde);
 	transfer_vec3("colorBorde", colorBorde);
 	transfer_int("blinn", useBlinn);
 	transfer_int("toon", useToon);
@@ -270,7 +272,7 @@ void render_imgui(void) {
 		luz = vec3(cos(luzGlobal.az) * cos(luzGlobal.el), sin(luzGlobal.el), sin(luzGlobal.az) * cos(luzGlobal.el));
 	imgui_renderLightColor(&colorLuz, &colorFondo);
 	imgui_renderCoefficients(&coeficientes);
-	imgui_renderBorderSettings(&colorBorde, &grosorBorde);
+	imgui_renderBorderSettings(&colorBorde, &grosorBorde, &normalBorde);
 
 	ImGui::End();
 }
