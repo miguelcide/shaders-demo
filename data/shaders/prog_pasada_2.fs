@@ -22,6 +22,7 @@ uniform vec4 coeficientes;
 
 uniform float grosorBorde;
 uniform float normalBorde;
+uniform float profundidadBorde;
 uniform vec3 colorBorde;
 
 uniform uint nColoresD = 4u;
@@ -55,7 +56,7 @@ float sobel(sampler2D gBuffer) {
 				texture(gBuffer, (gl_FragCoord.xy + vec2( 1, -1)) * texelSize).rgb * -1.0 +
 				texture(gBuffer, (gl_FragCoord.xy + vec2( 1,  1)) * texelSize).rgb *  1.0);
 
-	return length(max(sobelX, sobelY));
+	return length(sqrt(sobelX*sobelX + sobelY*sobelY));
 }
 
 float normal_edge_detection(sampler2D gBuffer){
@@ -71,10 +72,25 @@ float normal_edge_detection(sampler2D gBuffer){
 	return length(res);
 }
 
+float depth_edge_detection(sampler2D gBuffer) {
+    vec2 texelSize = 1.0 / resolution;
+
+    float center = texture(gBuffer, gl_FragCoord.xy * texelSize).r;
+    float left = texture(gBuffer, (gl_FragCoord.xy + vec2(0, -1)) * texelSize).r;
+    float right = texture(gBuffer, (gl_FragCoord.xy + vec2(0, 1)) * texelSize).r;
+    float top = texture(gBuffer, (gl_FragCoord.xy + vec2(1, 0)) * texelSize).r;
+    float bottom = texture(gBuffer, (gl_FragCoord.xy + vec2(-1, 0)) * texelSize).r;
+
+    float res = abs(left - center) + abs(right - center) + abs(top - center) + abs(bottom - center);
+    return res;
+}
+
+
 void main() {
 	vec2 fragCoord = gl_FragCoord.xy / resolution; //pos del pixel
 	vec3 nn = texture(gNormals, fragCoord).rgb;
 	vec3 vv = normalize(camera - texture(gWorldPos, fragCoord).rgb);
+	float z = texture(gDepth, fragCoord).r;
 
 	if (length(nn) == 0)
 		discard;
@@ -83,27 +99,24 @@ void main() {
 	// 	return;
 	// }
 
-	float magnitude = 0, normalMagnitude = 0;
+	float magnitude = 0, normalMagnitude = 0, depthMagnitude = 0;
 	if (useSobelTex)
 		// magnitude = max(magnitude, clamp(sobel(gAlbedo) / 16, 0.0, 1.0));
-		magnitude = max(magnitude, sobel(gAlbedo) / 4);
+		magnitude = max(magnitude, sobel(gAlbedo));
 	if (useSobelNorm)
 		// magnitude = max(magnitude, clamp(sobel(gNormals) / 64, 0.0, 1.0)); //norm con los cuadrados para bajar el borde de las normales
 		//magnitude = max(magnitude, sobel(gNormals) / 8);
 		normalMagnitude = normal_edge_detection(gNormals);
 	if (useSobelDepth)
 		// magnitude = max(magnitude, clamp(sobel(gDepth)/ 16, 0.0, 1.0));
-		magnitude = max(magnitude, sobel(gDepth) / 4);
+		// magnitude = max(magnitude, sobel(gDepth));
+		depthMagnitude = depth_edge_detection(gDepth);
 		
-	if (normalMagnitude >= normalBorde)	{
+	if (normalMagnitude >= normalBorde || magnitude >= grosorBorde || depthMagnitude >= profundidadBorde)	{
 		col = colorBorde;
 		return;
 	}
 
-	if (magnitude >= grosorBorde) {
-		col = colorBorde;
-		return;
-	}
 
 	float difusa = max(dot(luz, nn), 0);
 
