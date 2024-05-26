@@ -4,6 +4,7 @@ out vec3 col;
 uniform bool blinn = false;
 uniform bool toon = false;
 uniform bool bayer = false;
+uniform bool hatching = true;
 uniform bool useSobelTex = false;
 uniform bool useSobelNorm = false;
 uniform bool useSobelDepth = false;
@@ -12,7 +13,7 @@ uniform sampler2D gAlbedo;
 uniform sampler2D gDepth;
 uniform sampler2D gNormals;
 uniform sampler2D gWorldPos;
-uniform sampler2D bayerT;
+uniform sampler2D ditherT;
 
 uniform vec3 camera;
 
@@ -27,6 +28,8 @@ uniform vec3 colorBorde;
 
 uniform uint nColoresD = 4u;
 uniform uint nColoresS = 2u;
+
+uniform float ditherScale = 1.0f;
 
 uniform vec2 resolution = vec2(800, 600);
 
@@ -137,13 +140,20 @@ void main() {
 		float iluSpecular = floor(specular * nColoresS) / (nColoresS - 1u);
 
 		if (bayer) {
-			float edge = texture(bayerT, gl_FragCoord.xy / 16.).r;
+			float edge = texture(ditherT, gl_FragCoord.xy * ditherScale / 16.).r;
 
 			float delta = difusa - iluDifusa;
 			iluDifusa += (step(edge, delta) - step(delta, -edge)) / (nColoresD - 1u);
 
 			delta = specular - iluSpecular;
 			iluSpecular += (step(edge, delta) - step(delta, -edge)) / (nColoresS - 1u);
+		}
+		else if (hatching) {
+			float edge = texture(ditherT, gl_FragCoord.xy * ditherScale / 314.).r;
+			//float edge = fract(gl_FragCoord.x / 6.);
+			//edge = (edge > 0.5 ? 1.0 - edge : edge) * 2.;
+
+			iluDifusa = step(edge, sqrt(iluDifusa));
 		}
 
 		ilu = coeficientes.x + iluDifusa * coeficientes.y + iluSpecular * coeficientes.z;

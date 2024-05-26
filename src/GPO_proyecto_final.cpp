@@ -23,7 +23,7 @@ struct {
 	GLuint albedo;
 	GLuint position;
 } gBuffer;
-GLuint bayer, blanco;
+GLuint bayer, hatch, blanco;
 GLuint quadVAO;
 struct escena isla, torre;
 struct escena* escenaActual = &isla;
@@ -48,7 +48,8 @@ void dibujar_escena() {
 
 void dibujar_quad() {
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, bayer);
+	//glBindTexture(GL_TEXTURE_2D, bayer);
+	glBindTexture(GL_TEXTURE_2D, hatch);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, gBuffer.albedo);
 	glActiveTexture(GL_TEXTURE2);
@@ -153,6 +154,7 @@ void init_scene() {
 	bayer = cargar_textura("data/bayer16.png", GL_TEXTURE0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	hatch = cargar_textura("data/hatch.png", GL_TEXTURE0);
 	//Literalmente un pixel blanco, para ver el modelo "sin textura"
 	glGenTextures(1, &blanco);
 	glBindTexture(GL_TEXTURE_2D, blanco);
@@ -234,7 +236,7 @@ void render_scene() {
 	transfer_uint("nColoresD", nColoresD);
 	transfer_uint("nColoresS", nColoresS);
 	transfer_vec2("resolution", vec2(ANCHO, ALTO));
-	transfer_int("bayerT", 0);
+	transfer_int("ditherT", 0);
 	transfer_int("gAlbedo", 1);
 	transfer_int("gDepth", 2);
 	transfer_int("gNormals", 3);
