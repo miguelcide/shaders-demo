@@ -57,14 +57,16 @@ void dibujar_escena() {
 
 void dibujar_quad() {
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, (useDither ? bayer : hatch));
+	glBindTexture(GL_TEXTURE_2D, bayer);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, gBuffer.albedo);
+	glBindTexture(GL_TEXTURE_2D, hatch);
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, gBuffer.depth);
+	glBindTexture(GL_TEXTURE_2D, gBuffer.albedo);
 	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, gBuffer.normals);
+	glBindTexture(GL_TEXTURE_2D, gBuffer.depth);
 	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, gBuffer.normals);
+	glActiveTexture(GL_TEXTURE5);
 	glBindTexture(GL_TEXTURE_2D, gBuffer.position);
 
 	glBindVertexArray(quadVAO);
@@ -237,11 +239,12 @@ void render_scene() {
 	transfer_uint("nColoresD", nColoresD);
 	transfer_uint("nColoresS", nColoresS);
 	transfer_vec2("resolution", vec2(ANCHO, ALTO));
-	transfer_int("ditherT", 0);
-	transfer_int("gAlbedo", 1);
-	transfer_int("gDepth", 2);
-	transfer_int("gNormals", 3);
-	transfer_int("gWorldPos", 4);
+	transfer_int("bayerT", 0);
+	transfer_int("hatchT", 1);
+	transfer_int("gAlbedo", 2);
+	transfer_int("gDepth", 3);
+	transfer_int("gNormals", 4);
+	transfer_int("gWorldPos", 5);
 	dibujar_quad();
 }
 

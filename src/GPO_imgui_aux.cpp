@@ -42,13 +42,11 @@ void imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, bo
 		ImGui::Checkbox("Sobel sobre norm", useSobelNorm);
 		ImGui::Checkbox("Sobel sobre depth", useSobelDepth);
 		ImGui::Checkbox("Toon-shading", useToon);
+		ImGui::SameLine();
+		ImGui::Checkbox("Hatching", useHatching);
 		if (*useToon) {
 			ImGui::SameLine();
-			if (ImGui::Checkbox("Dithering", useDither))
-				*useHatching = false;
-			ImGui::SameLine();
-			if (ImGui::Checkbox("Hatching", useHatching))
-				*useDither = false;
+			ImGui::Checkbox("Dithering", useDither);
 			const unsigned int one = 1;
 			ImGui::InputScalar("Nº tones (diffuse)", ImGuiDataType_U32, nColoresD, &one, NULL, "%u");
 			ImGui::InputScalar("Nº tones (specular)", ImGuiDataType_U32, nColoresS, &one, NULL, "%u");
