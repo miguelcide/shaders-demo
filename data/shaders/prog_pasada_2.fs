@@ -116,7 +116,7 @@ void main() {
 		// magnitude = max(magnitude, sobel(gDepth));
 		depthMagnitude = depth_edge_detection(gDepth);
 		
-	if (normalMagnitude >= normalBorde || magnitude >= grosorBorde || depthMagnitude >= profundidadBorde)	{
+	if (normalMagnitude >= normalBorde || magnitude >= grosorBorde || depthMagnitude >= profundidadBorde) {
 		col = colorBorde;
 		return;
 	}
@@ -162,14 +162,16 @@ void main() {
 		float sample3 = texture(hatchT, texCoord + 0.75).r;
 
 		//https://math.stackexchange.com/questions/544559/is-there-any-equation-for-triangle
-		difusa = sample0 * clamp(1.5 - 4. * difusa, 0., 1.)
-					+ sample1 * max(4.*(difusa - 0.375) * sign(0.375 - difusa) + 4.*0.375 - 0.5, 0.)
-					+ sample2 * max(4.*(difusa - 0.625) * sign(0.625 - difusa) + 4.*0.625 - 1.5, 0.)
-					+ sample3 * clamp(4 * difusa - 2.5, 0., 1.);
-		specular = sample0 * clamp(1.5 - 4. * specular, 0., 1.)
-					+ sample1 * max(4.*(specular - 0.375) * sign(0.375 - specular) + 4.*0.375 - 0.5, 0.)
-					+ sample2 * max(4.*(specular - 0.625) * sign(0.625 - specular) + 4.*0.625 - 1.5, 0.)
-					+ sample3 * clamp(4 * specular - 2.5, 0., 1.);
+		difusa = sample0 * clamp(1.5 - 5. * difusa, 0., 1.)
+					+ sample1 * max(5.*(difusa - 0.3) * sign(0.3 - difusa) + 5.*0.3 - 0.5, 0.)
+					+ sample2 * max(5.*(difusa - 0.5) * sign(0.5 - difusa) + 5.*0.5 - 1.5, 0.)
+					+ sample3 * max(5.*(difusa - 0.7) * sign(0.7 - difusa) + 5.*0.7 - 2.5, 0.)
+					+ clamp(5 * difusa - 3.5, 0., 1.);
+		specular = sample0 * clamp(1.5 - 5. * specular, 0., 1.)
+					+ sample1 * max(5.*(specular - 0.3) * sign(0.3 - specular) + 5.*0.3 - 0.5, 0.)
+					+ sample2 * max(5.*(specular - 0.5) * sign(0.5 - specular) + 5.*0.5 - 1.5, 0.)
+					+ sample3 * max(5.*(specular - 0.7) * sign(0.7 - specular) + 5.*0.7 - 2.5, 0.)
+					+ clamp(5 * specular - 3.5, 0., 1.);
 	}
 
 	float ilu = coeficientes.x
