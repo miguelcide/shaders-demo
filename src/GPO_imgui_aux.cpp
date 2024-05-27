@@ -45,7 +45,7 @@ void imgui_renderframe(void)
 
 
 void imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, bool* useHatching, bool* useSobelTex,
-								bool* useSobelNorm, unsigned int* nColoresD, unsigned int* nColoresS, bool* improved_border) 
+								bool* useSobelNorm, unsigned int* nColoresD, unsigned int* nColoresS, float* ditherScale, bool* improved_border)
 {
 	static int sel = 0, border_det = 0;
 	static bool sTex = false, sNorm = true;
@@ -72,6 +72,8 @@ void imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, bo
 		if (*useToon) {
 			ImGui::SameLine();
 			ImGui::Checkbox("Dithering", useDither);
+			if (*useDither)
+				ImGui::SliderFloat("Dither texture scale", ditherScale, 1.0f, 16.0f, "%.0f");
 			const unsigned int one = 1;
 			ImGui::InputScalar("Nº tones (diffuse)", ImGuiDataType_U32, nColoresD, &one, NULL, "%u");
 			ImGui::InputScalar("Nº tones (specular)", ImGuiDataType_U32, nColoresS, &one, NULL, "%u");

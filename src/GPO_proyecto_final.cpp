@@ -199,6 +199,9 @@ float sobelBorde = 1;
 float normalBorde = 1;
 vec3 colorBorde = vec3(0, 0, 0);
 
+//Dithering
+float ditherScale = 1.0f;
+
 // Actualizar escena: cambiar posici�n objetos, nuevos objetros, posici�n c�mara, luces, etc.
 void render_scene() {
 	///////// Actualizacion matriz MVP  /////////
@@ -237,6 +240,7 @@ void render_scene() {
 	transfer_int("useSobelNorm", useSobelNorm);
 	transfer_uint("nColoresD", nColoresD);
 	transfer_uint("nColoresS", nColoresS);
+	transfer_float("ditherScale", ditherScale);
 	transfer_vec2("resolution", vec2(ANCHO, ALTO));
 	transfer_int("bayerT", 0);
 	transfer_int("hatchT", 1);
@@ -271,7 +275,7 @@ void render_imgui(void) {
 				break;
 		}
 	}
-	imgui_renderShaderSelect(&useBlinn, &useToon, &useDither, &useHatching, &useSobelTex, &useSobelNorm, &nColoresD, &nColoresS, &improved_border);
+	imgui_renderShaderSelect(&useBlinn, &useToon, &useDither, &useHatching, &useSobelTex, &useSobelNorm, &nColoresD, &nColoresS, &ditherScale, &improved_border);
 	
 	if(improved_border)
 		imgui_renderImprovedBorderSettings(&colorBorde, &sobelBorde, &normalBorde);

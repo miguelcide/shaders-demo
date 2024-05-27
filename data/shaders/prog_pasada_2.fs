@@ -120,7 +120,7 @@ void main() {
 
 		// Dithering
 		if (bayer) {
-			float edge = texture(bayerT, gl_FragCoord.xy * ditherScale / 16.).r;
+			float edge = texture(bayerT, gl_FragCoord.xy / (16. * ditherScale)).r;
 
 			float delta = difusa - iluDifusa;
 			iluDifusa += (step(edge, delta) - step(delta, -edge)) / (nColoresD - 1u);
