@@ -33,9 +33,9 @@ bool useBlinn = false;
 bool useDither = false;
 bool useHatching = false;
 bool useToon = false;
+bool improved_border = false;
 bool useSobelTex = false;
 bool useSobelNorm = false;
-bool useSobelDepth = false;
 
 // Dibuja objeto indexado
 void dibujar_indexado(objeto obj) {
@@ -194,9 +194,9 @@ unsigned int nColoresD = 4;
 unsigned int nColoresS = 2;
 
 //Bordes
-float grosorBorde = 1;
+float grosorBorde = 0;
+float sobelBorde = 1;
 float normalBorde = 2;
-float profundidadBorde = 0.2f;
 vec3 colorBorde = vec3(0, 0, 0);
 
 // Actualizar escena: cambiar posici�n objetos, nuevos objetros, posici�n c�mara, luces, etc.
@@ -226,8 +226,8 @@ void render_scene() {
 	transfer_vec3("colorLuz", colorLuz);
 	transfer_vec4("coeficientes", coeficientes);
 	transfer_float("grosorBorde", grosorBorde);
+	transfer_float("sobelBorde", sobelBorde);
 	transfer_float("normalBorde", normalBorde);
-	transfer_float("profundidadBorde", profundidadBorde);
 	transfer_vec3("colorBorde", colorBorde);
 	transfer_int("blinn", useBlinn);
 	transfer_int("toon", useToon);
@@ -235,14 +235,12 @@ void render_scene() {
 	transfer_int("hatching", useHatching);
 	transfer_int("useSobelTex", useSobelTex);
 	transfer_int("useSobelNorm", useSobelNorm);
-	transfer_int("useSobelDepth", useSobelDepth);
 	transfer_uint("nColoresD", nColoresD);
 	transfer_uint("nColoresS", nColoresS);
 	transfer_vec2("resolution", vec2(ANCHO, ALTO));
 	transfer_int("bayerT", 0);
 	transfer_int("hatchT", 1);
 	transfer_int("gAlbedo", 2);
-	transfer_int("gDepth", 3);
 	transfer_int("gNormals", 4);
 	transfer_int("gWorldPos", 5);
 	dibujar_quad();
@@ -273,8 +271,12 @@ void render_imgui(void) {
 				break;
 		}
 	}
-	imgui_renderShaderSelect(&useBlinn, &useToon, &useDither, &useHatching, &useSobelTex, &useSobelNorm, &useSobelDepth, &nColoresD, &nColoresS);
-	imgui_renderBorderSettings(&colorBorde, &grosorBorde, &normalBorde);
+	imgui_renderShaderSelect(&useBlinn, &useToon, &useDither, &useHatching, &useSobelTex, &useSobelNorm, &nColoresD, &nColoresS, &improved_border);
+	
+	if(improved_border)
+		imgui_renderImprovedBorderSettings(&colorBorde, &sobelBorde, &normalBorde);
+	else 
+		imgui_renderBorderSettings(&colorBorde, &grosorBorde);
 
 	if (imgui_renderCameraPos(&camara.d, &camara.az, &camara.el))
 		pos_obs = camara.d * vec3(cos(camara.az) * cos(camara.el), sin(camara.el), sin(camara.az) * cos(camara.el));
