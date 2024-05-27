@@ -31,10 +31,9 @@ void imgui_newframe(void) {
 	ImGui::NewFrame();
 }
 
-bool imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, bool* useSobelTex, bool* useSobelNorm,
-								bool* useSobelDepth, unsigned int* nColoresD, unsigned int* nColoresS) {
+void imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, bool* useHatching, bool* useSobelTex,
+								bool* useSobelNorm,bool* useSobelDepth, unsigned int* nColoresD, unsigned int* nColoresS) {
 	static int sel = 0;
-	bool res;
 
 	if (ImGui::CollapsingHeader("Select shader", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::RadioButton("Phong", &sel, 0); ImGui::SameLine();
@@ -42,21 +41,22 @@ bool imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, bo
 		ImGui::Checkbox("Sobel sobre tex", useSobelTex);
 		ImGui::Checkbox("Sobel sobre norm", useSobelNorm);
 		ImGui::Checkbox("Sobel sobre depth", useSobelDepth);
-		res = ImGui::Checkbox("Toon-shading", useToon);
+		ImGui::Checkbox("Toon-shading", useToon);
 		if (*useToon) {
 			ImGui::SameLine();
-			res |= ImGui::Checkbox("Dithering", useDither);
+			if (ImGui::Checkbox("Dithering", useDither))
+				*useHatching = false;
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Hatching", useHatching))
+				*useDither = false;
 			const unsigned int one = 1;
-			res |= ImGui::InputScalar("Nº tones (diffuse)", ImGuiDataType_U32, nColoresD, &one, NULL, "%u");
-			res |= ImGui::InputScalar("Nº tones (specular)", ImGuiDataType_U32, nColoresS, &one, NULL, "%u");
+			ImGui::InputScalar("Nº tones (diffuse)", ImGuiDataType_U32, nColoresD, &one, NULL, "%u");
+			ImGui::InputScalar("Nº tones (specular)", ImGuiDataType_U32, nColoresS, &one, NULL, "%u");
 		}
 	}
 
-	if (sel != *useBlinn) {
+	if (sel != *useBlinn)
 		*useBlinn = sel;
-		return true;
-	}
-	return res;
 }
 
 bool imgui_renderSceneSelect(int* nScene, bool* useTextures) {

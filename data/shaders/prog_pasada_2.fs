@@ -4,7 +4,7 @@ out vec3 col;
 uniform bool blinn = false;
 uniform bool toon = false;
 uniform bool bayer = false;
-uniform bool hatching = true;
+uniform bool hatching = false;
 uniform bool useSobelTex = false;
 uniform bool useSobelNorm = false;
 uniform bool useSobelDepth = false;
@@ -149,11 +149,22 @@ void main() {
 			iluSpecular += (step(edge, delta) - step(delta, -edge)) / (nColoresS - 1u);
 		}
 		else if (hatching) {
-			float edge = texture(ditherT, gl_FragCoord.xy * ditherScale / 314.).r;
-			//float edge = fract(gl_FragCoord.x / 6.);
-			//edge = (edge > 0.5 ? 1.0 - edge : edge) * 2.;
+			vec2 texCoord = gl_FragCoord.xy / 256.;
+			texCoord.x = fract(texCoord.x) * 0.25;
+			float sample0 = texture(ditherT, texCoord).r;
+			float sample1 = texture(ditherT, texCoord + 0.25).r;
+			float sample2 = texture(ditherT, texCoord + 0.5).r;
+			float sample3 = texture(ditherT, texCoord + 0.75).r;
 
-			iluDifusa = step(edge, sqrt(iluDifusa));
+			//https://math.stackexchange.com/questions/544559/is-there-any-equation-for-triangle
+			iluDifusa = sample0 * clamp(1.5 - 4. * iluDifusa, 0., 1.)
+						+ sample1 * max(4.*(iluDifusa - 0.375) * sign(0.375 - iluDifusa) + 4.*0.375 - 0.5, 0.)
+						+ sample2 * max(4.*(iluDifusa - 0.625) * sign(0.625 - iluDifusa) + 4.*0.625 - 1.5, 0.)
+						+ sample3 * clamp(4 * iluDifusa - 2.5, 0., 1.);
+			iluSpecular = sample0 * clamp(1.5 - 4. * iluSpecular, 0., 1.)
+						+ sample1 * max(4.*(iluSpecular - 0.375) * sign(0.375 - iluSpecular) + 4.*0.375 - 0.5, 0.)
+						+ sample2 * max(4.*(iluSpecular - 0.625) * sign(0.625 - iluSpecular) + 4.*0.625 - 1.5, 0.)
+						+ sample3 * clamp(4 * iluSpecular - 2.5, 0., 1.);
 		}
 
 		ilu = coeficientes.x + iluDifusa * coeficientes.y + iluSpecular * coeficientes.z;

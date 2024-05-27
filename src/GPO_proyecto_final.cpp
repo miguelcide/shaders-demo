@@ -28,6 +28,15 @@ GLuint quadVAO;
 struct escena isla, torre;
 struct escena* escenaActual = &isla;
 
+//Control del shader
+bool useBlinn = false;
+bool useDither = false;
+bool useHatching = false;
+bool useToon = false;
+bool useSobelTex = false;
+bool useSobelNorm = false;
+bool useSobelDepth = false;
+
 // Dibuja objeto indexado
 void dibujar_indexado(objeto obj) {
 	glBindVertexArray(obj.VAO);              // Activamos VAO asociado al objeto
@@ -48,8 +57,7 @@ void dibujar_escena() {
 
 void dibujar_quad() {
 	glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, bayer);
-	glBindTexture(GL_TEXTURE_2D, hatch);
+	glBindTexture(GL_TEXTURE_2D, (useDither ? bayer : hatch));
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, gBuffer.albedo);
 	glActiveTexture(GL_TEXTURE2);
@@ -154,7 +162,7 @@ void init_scene() {
 	bayer = cargar_textura("data/bayer16.png", GL_TEXTURE0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	hatch = cargar_textura("data/hatch.png", GL_TEXTURE0);
+	hatch = cargar_textura("data/hatching.png", GL_TEXTURE0);
 	//Literalmente un pixel blanco, para ver el modelo "sin textura"
 	glGenTextures(1, &blanco);
 	glBindTexture(GL_TEXTURE_2D, blanco);
@@ -174,22 +182,14 @@ vec3 up = vec3(0,1,0);
 float fov = 35.0f, aspect = 4.0f / 3.0f;
 
 //Iluminacion
-bool useBlinn = false;
 vec3 luz = vec3(1, 0, 0);
 vec3 colorLuz = vec3(1, 1, 1);
 vec3 colorFondo = vec3(0.588, 0.863, 1);
 vec4 coeficientes = vec4(0.1, 0.6, 0.3, 16);
 
-//Toon + dither
-bool useDither = false;
-bool useToon = false;
+//Toon-shading
 unsigned int nColoresD = 4;
 unsigned int nColoresS = 2;
-
-//Sobel
-bool useSobelTex = false;
-bool useSobelNorm = false;
-bool useSobelDepth = false;
 
 //Bordes
 float grosorBorde = 0.5f;
@@ -230,6 +230,7 @@ void render_scene() {
 	transfer_int("blinn", useBlinn);
 	transfer_int("toon", useToon);
 	transfer_int("bayer", useDither);
+	transfer_int("hatching", useHatching);
 	transfer_int("useSobelTex", useSobelTex);
 	transfer_int("useSobelNorm", useSobelNorm);
 	transfer_int("useSobelDepth", useSobelDepth);
@@ -269,7 +270,7 @@ void render_imgui(void) {
 				break;
 		}
 	}
-	imgui_renderShaderSelect(&useBlinn, &useToon, &useDither, &useSobelTex, &useSobelNorm, &useSobelDepth, &nColoresD, &nColoresS);
+	imgui_renderShaderSelect(&useBlinn, &useToon, &useDither, &useHatching, &useSobelTex, &useSobelNorm, &useSobelDepth, &nColoresD, &nColoresS);
 	if (imgui_renderCameraPos(&camara.d, &camara.az, &camara.el))
 		pos_obs = camara.d * vec3(cos(camara.az) * cos(camara.el), sin(camara.el), sin(camara.az) * cos(camara.el));
 	if (imgui_renderLightVec(&luzGlobal.az, &luzGlobal.el))
