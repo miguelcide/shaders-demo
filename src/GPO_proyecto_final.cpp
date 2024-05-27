@@ -196,7 +196,7 @@ unsigned int nColoresS = 2;
 //Bordes
 float grosorBorde = 0;
 float sobelBorde = 1;
-float normalBorde = 2;
+float normalBorde = 1;
 vec3 colorBorde = vec3(0, 0, 0);
 
 // Actualizar escena: cambiar posici�n objetos, nuevos objetros, posici�n c�mara, luces, etc.
@@ -250,7 +250,7 @@ void render_scene() {
 void render_imgui(void) {
 	static int nScene = 0;
 	static struct {
-		float d = 8.0f;
+		float d = 5.0f;
 		float az = 0.0f;
 		float el = 0.0f;
 	} camara;

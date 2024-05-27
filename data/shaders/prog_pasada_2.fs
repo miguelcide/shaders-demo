@@ -78,14 +78,12 @@ void main() {
 		discard;
 
 	// Edge detection
-	if(!useSobelTex && !useSobelNorm){
-		if (dot(vv, nn) < grosorBorde) {
-			col = colorBorde;
-			return;
-		}
+	if(!useSobelTex && !useSobelNorm && dot(vv, nn) < grosorBorde){
+		col = colorBorde;
+		return;
 	}
-	
-	
+
+
 	// Improved edge detection
 	float magnitude = 0, normalMagnitude = 0;
 	if (useSobelTex)
@@ -93,13 +91,13 @@ void main() {
 
 	if (useSobelNorm)
 		normalMagnitude = normal_edge_detection(gNormals);
-			
+
 	if (normalMagnitude >= normalBorde || magnitude >= sobelBorde) {
 		col = colorBorde;
 		return;
 	}
 
-	
+
 	// Light model (Phong/Blinn)
 	float difusa = max(dot(luz, nn), 0);
 

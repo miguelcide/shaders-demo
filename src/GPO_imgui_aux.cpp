@@ -48,6 +48,7 @@ void imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, bo
 								bool* useSobelNorm, unsigned int* nColoresD, unsigned int* nColoresS, bool* improved_border) 
 {
 	static int sel = 0, border_det = 0;
+	static bool sTex = false, sNorm = true;
 
 	if (ImGui::CollapsingHeader("Select shader", ImGuiTreeNodeFlags_DefaultOpen)) 
 	{
@@ -57,8 +58,10 @@ void imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, bo
 		ImGui::RadioButton("Improved Border Detection", &border_det, 1);
 	
 		if(border_det){
-			ImGui::Checkbox("Sobel sobre Albedo", useSobelTex); ImGui::SameLine();
-			ImGui::Checkbox("Detección sobre normales", useSobelNorm);
+			ImGui::Checkbox("Sobel sobre Albedo", &sTex); ImGui::SameLine();
+			ImGui::Checkbox("Detección sobre normales", &sNorm);
+			*useSobelTex = sTex;
+			*useSobelNorm = sNorm;
 		} else {
 			*useSobelTex = false;
 			*useSobelNorm = false;
@@ -75,7 +78,6 @@ void imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, bo
 		}
 
 		ImGui::Checkbox("Hatching", useHatching);
-
 	}
 
 	if (sel != *useBlinn)
@@ -153,9 +155,9 @@ void imgui_renderBorderSettings(vec3* color, float* grosorBorde)
 {
 	if (ImGui::CollapsingHeader("Border Detection")) 
 	{
-		ImGui::SliderFloat("Border Thickness##borderColor", grosorBorde, 0.0f, 2.0f, "%.2f");
+		ImGui::SliderFloat("Border Thickness##borderColor", grosorBorde, 0.0f, 1.0f, "%.2f");
 			
-		ImGui::ColorPicker3("##borderColor", &color->r, //Esto es una autentica guarrada que puede explotar en cualquier momento
+		ImGui::ColorPicker3("##borderColor", &color->r, //Esto puede explotar en cualquier momento
 							ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_DisplayRGB);
 	}
 }
@@ -168,7 +170,7 @@ void imgui_renderImprovedBorderSettings(vec3* color, float* tex_treshold, float*
 		ImGui::SliderFloat("Sobel Sensibility##borderColor", tex_treshold, 0.0f, 2.0f, "%.2f");
 		ImGui::SliderFloat("Normal Threshold##borderColor", norm_treshold, 0.0f, 2.0f, "%.2f");
 		
-		ImGui::ColorPicker3("##borderColor", &color->r, //Esto es una autentica guarrada que puede explotar en cualquier momento
+		ImGui::ColorPicker3("##borderColor", &color->r, //Esto puede explotar en cualquier momento
 							ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_DisplayRGB);
 	}
 }
