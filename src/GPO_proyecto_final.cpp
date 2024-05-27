@@ -178,7 +178,7 @@ void init_scene() {
 }
 
 //Camara
-vec3 pos_obs = vec3(8.0f,0.0f,0.0f);
+vec3 pos_obs = vec3(5.0f,0.0f,0.0f);
 vec3 target = vec3(0.0f,0.0f,0.0f);
 vec3 up = vec3(0,1,0);
 float fov = 35.0f, aspect = 4.0f / 3.0f;
@@ -194,8 +194,8 @@ unsigned int nColoresD = 4;
 unsigned int nColoresS = 2;
 
 //Bordes
-float grosorBorde = 0.5f;
-float normalBorde = 0.2f;
+float grosorBorde = 1;
+float normalBorde = 2;
 float profundidadBorde = 0.2f;
 vec3 colorBorde = vec3(0, 0, 0);
 
@@ -274,13 +274,16 @@ void render_imgui(void) {
 		}
 	}
 	imgui_renderShaderSelect(&useBlinn, &useToon, &useDither, &useHatching, &useSobelTex, &useSobelNorm, &useSobelDepth, &nColoresD, &nColoresS);
+	imgui_renderBorderSettings(&colorBorde, &grosorBorde, &normalBorde);
+
 	if (imgui_renderCameraPos(&camara.d, &camara.az, &camara.el))
 		pos_obs = camara.d * vec3(cos(camara.az) * cos(camara.el), sin(camara.el), sin(camara.az) * cos(camara.el));
+
 	if (imgui_renderLightVec(&luzGlobal.az, &luzGlobal.el))
 		luz = vec3(cos(luzGlobal.az) * cos(luzGlobal.el), sin(luzGlobal.el), sin(luzGlobal.az) * cos(luzGlobal.el));
-	imgui_renderLightColor(&colorLuz, &colorFondo);
+	
 	imgui_renderCoefficients(&coeficientes);
-	imgui_renderBorderSettings(&colorBorde, &grosorBorde, &normalBorde, &profundidadBorde);
+	imgui_renderLightColor(&colorLuz, &colorFondo);
 
 	ImGui::End();
 }

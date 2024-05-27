@@ -38,12 +38,10 @@ void imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, bo
 	if (ImGui::CollapsingHeader("Select shader", ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::RadioButton("Phong", &sel, 0); ImGui::SameLine();
 		ImGui::RadioButton("Blinn", &sel, 1);
-		ImGui::Checkbox("Sobel sobre tex", useSobelTex);
-		ImGui::Checkbox("Sobel sobre norm", useSobelNorm);
-		ImGui::Checkbox("Sobel sobre depth", useSobelDepth);
+		ImGui::Checkbox("Sobel sobre Albedo", useSobelTex); ImGui::SameLine();
+		ImGui::Checkbox("Detección sobre normales", useSobelNorm);
 		ImGui::Checkbox("Toon-shading", useToon);
-		ImGui::SameLine();
-		ImGui::Checkbox("Hatching", useHatching);
+		
 		if (*useToon) {
 			ImGui::SameLine();
 			ImGui::Checkbox("Dithering", useDither);
@@ -51,6 +49,9 @@ void imgui_renderShaderSelect(bool* useBlinn, bool* useToon, bool* useDither, bo
 			ImGui::InputScalar("Nº tones (diffuse)", ImGuiDataType_U32, nColoresD, &one, NULL, "%u");
 			ImGui::InputScalar("Nº tones (specular)", ImGuiDataType_U32, nColoresS, &one, NULL, "%u");
 		}
+
+		ImGui::Checkbox("Hatching", useHatching);
+
 	}
 
 	if (sel != *useBlinn)
@@ -114,13 +115,11 @@ void imgui_renderCoefficients(vec4* coeficientes) {
 	}
 }
 
-void imgui_renderBorderSettings(vec3* color, float* tex_treshold, float* norm_treshold, float* depth_treshold) {
-	if (ImGui::CollapsingHeader("Border", ImGuiTreeNodeFlags_DefaultOpen)) {
-		ImGui::SliderFloat("Border Threshold##borderColor", tex_treshold, 0.0f, 2.0f, "%.2f");
+void imgui_renderBorderSettings(vec3* color, float* tex_treshold, float* norm_treshold) {
+	if (ImGui::CollapsingHeader("Improved Border Detection", ImGuiTreeNodeFlags_DefaultOpen)) {
+		ImGui::SliderFloat("Sobel Sensibility##borderColor", tex_treshold, 0.0f, 2.0f, "%.2f");
 		ImGui::SliderFloat("Normal Threshold##borderColor", norm_treshold, 0.0f, 2.0f, "%.2f");
-		ImGui::SliderFloat("Depth Threshold##borderColor", depth_treshold, 0.0f, 2.0f, "%.2f");
-
-
+		
 		ImGui::ColorPicker3("##borderColor", &color->r, //Esto es una autentica guarrada que puede explotar en cualquier momento
 							ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_DisplayRGB);
 	}
