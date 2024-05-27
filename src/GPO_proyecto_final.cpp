@@ -165,7 +165,7 @@ void init_scene() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	hatch = cargar_textura("data/hatching.png", GL_TEXTURE0);
-	//Literalmente un pixel blanco, para ver el modelo "sin textura"
+	//Un pixel blanco, para ver el modelo "sin textura"
 	glGenTextures(1, &blanco);
 	glBindTexture(GL_TEXTURE_2D, blanco);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, (const GLubyte[]) {255, 255, 255});
